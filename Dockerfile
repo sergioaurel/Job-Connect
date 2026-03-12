@@ -25,5 +25,4 @@ RUN sed -i 's|AllowOverride None|AllowOverride All|g' \
 
 EXPOSE 80
 
-CMD ["apache2-foreground"]
-
+CMD bash -c "php artisan migrate --force && apache2-foreground"
