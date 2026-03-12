@@ -19,8 +19,7 @@ RUN composer install --optimize-autoloader --no-dev
 
 RUN node --version && npm --version
 
-ENV NODE_ENV=production
-RUN npm install && npm run build
+RUN npm install --include=dev && npm run build
 
 RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
