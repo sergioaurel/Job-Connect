@@ -1,4 +1,3 @@
-cat > Dockerfile << 'EOF'
 FROM php:8.4-apache
 
 RUN apt-get update && apt-get install -y \
@@ -27,4 +26,4 @@ RUN sed -i 's|AllowOverride None|AllowOverride All|g' \
 EXPOSE 80
 
 CMD ["apache2-foreground"]
-EOF
+
