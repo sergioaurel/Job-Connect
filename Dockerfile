@@ -25,4 +25,6 @@ RUN sed -i 's|AllowOverride None|AllowOverride All|g' \
 
 EXPOSE 80
 
+COPY ca.pem /etc/ssl/certs/aiven-ca.pem
+
 CMD bash -c "php artisan migrate --force && apache2-foreground"
