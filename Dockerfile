@@ -1,8 +1,11 @@
 FROM php:8.4-apache
 
 RUN apt-get update && apt-get install -y \
-    git unzip libzip-dev libonig-dev libpng-dev libicu-dev \
+    git unzip libzip-dev libonig-dev libpng-dev libicu-dev curl \
     && docker-php-ext-install pdo_mysql mbstring zip gd intl opcache
+
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs
 
 RUN a2enmod rewrite
 
@@ -14,8 +17,12 @@ COPY . .
 
 RUN composer install --optimize-autoloader --no-dev
 
+RUN npm install && npm run build
+
 RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
+
+COPY ca.pem /etc/ssl/certs/aiven-ca.pem
 
 RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|g' \
     /etc/apache2/sites-available/000-default.conf
@@ -25,6 +32,4 @@ RUN sed -i 's|AllowOverride None|AllowOverride All|g' \
 
 EXPOSE 80
 
-COPY ca.pem /etc/ssl/certs/aiven-ca.pem
 CMD bash -c "php artisan config:cache && php artisan route:cache && php artisan migrate --force && apache2-foreground"
-
