@@ -17,7 +17,9 @@ COPY . .
 
 RUN composer install --optimize-autoloader --no-dev
 
-RUN npm install && npm run build
+ENV NODE_ENV=production
+
+RUN npm ci && npm run build
 
 RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
