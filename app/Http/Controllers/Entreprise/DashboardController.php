@@ -7,11 +7,6 @@ use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    // public function __construct()
-    // {
-    //     $this->middleware(['auth', 'entreprise']);
-    // }
-
     /**
      * Tableau de bord de l'entreprise
      */
@@ -20,13 +15,11 @@ class DashboardController extends Controller
         $user = auth()->user();
         $entreprise = $user->entreprise;
 
-        // Rediriger vers la création du profil si pas encore créé
         if (!$entreprise) {
             return redirect()->route('entreprise.profil.create')
                 ->with('info', 'Veuillez d\'abord compléter votre profil entreprise.');
         }
 
-        // Statistiques
         $stats = [
             'total_offres' => $entreprise->offres()->count(),
             'offres_actives' => $entreprise->offres()->where('statut', 'active')->count(),
@@ -36,14 +29,12 @@ class DashboardController extends Controller
                 ->count(),
         ];
 
-        // Dernières offres
         $offres = $entreprise->offres()
             ->withCount('candidatures')
             ->latest()
             ->take(5)
             ->get();
 
-        // Dernières candidatures reçues
         $candidatures = \App\Models\Candidature::whereIn('offre_id', $entreprise->offres->pluck('id'))
             ->with(['offre', 'candidat'])
             ->latest()
@@ -58,7 +49,6 @@ class DashboardController extends Controller
      */
     public function createProfil()
     {
-        // Vérifier si l'entreprise a déjà un profil
         if (auth()->user()->entreprise) {
             return redirect()->route('entreprise.dashboard');
         }
@@ -72,44 +62,46 @@ class DashboardController extends Controller
     public function storeProfil(Request $request)
     {
         $request->validate([
-            'nom_entreprise' => 'required|string|max:255',
-            'description' => 'required|string|min:100',
-            'secteur_activite' => 'required|string|max:255',
-            'site_web' => 'nullable|url',
-            'adresse' => 'required|string|max:255',
-            'ville' => 'required|string|max:255',
+            'nom_entreprise'       => 'required|string|max:255',
+            'description'          => 'required|string|min:100',
+            'secteur_activite'     => 'required|string|max:255',
+            'site_web'             => 'nullable|url',
+            'adresse'              => 'required|string|max:255',
+            'ville'                => 'required|string|max:255',
             'telephone_entreprise' => 'required|string|max:20',
-            'effectif' => 'nullable|integer|min:1',
-            'annee_creation' => 'nullable|integer|min:1900|max:' . date('Y'),
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'effectif'             => 'nullable|integer|min:1',
+            'annee_creation'       => 'nullable|integer|min:1900|max:' . date('Y'),
+            'logo'                 => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ], [
             'nom_entreprise.required' => 'Le nom de l\'entreprise est obligatoire.',
-            'description.min' => 'La description doit contenir au moins 100 caractères.',
-            'site_web.url' => 'Le site web doit être une URL valide.',
-            'logo.image' => 'Le logo doit être une image.',
-            'logo.max' => 'Le logo ne doit pas dépasser 2 Mo.',
+            'description.min'         => 'La description doit contenir au moins 100 caractères.',
+            'site_web.url'            => 'Le site web doit être une URL valide.',
+            'logo.image'              => 'Le logo doit être une image.',
+            'logo.max'                => 'Le logo ne doit pas dépasser 2 Mo.',
         ]);
 
-        // Upload du logo si fourni
+        // Upload du logo sur Cloudinary si fourni
         $logoPath = null;
         if ($request->hasFile('logo')) {
-            $logoPath = $request->file('logo')->store('logos', 'public');
+            $uploaded = cloudinary()->upload($request->file('logo')->getRealPath(), [
+                'folder' => 'job_connect/logos',
+            ]);
+            $logoPath = $uploaded->getSecurePath();
         }
 
-        // Créer le profil entreprise
         \App\Models\Entreprise::create([
-            'user_id' => auth()->id(),
-            'nom_entreprise' => $request->nom_entreprise,
-            'description' => $request->description,
-            'secteur_activite' => $request->secteur_activite,
-            'site_web' => $request->site_web,
-            'adresse' => $request->adresse,
-            'ville' => $request->ville,
+            'user_id'              => auth()->id(),
+            'nom_entreprise'       => $request->nom_entreprise,
+            'description'          => $request->description,
+            'secteur_activite'     => $request->secteur_activite,
+            'site_web'             => $request->site_web,
+            'adresse'              => $request->adresse,
+            'ville'                => $request->ville,
             'telephone_entreprise' => $request->telephone_entreprise,
-            'effectif' => $request->effectif,
-            'annee_creation' => $request->annee_creation,
-            'logo' => $logoPath,
-            'statut' => 'en_attente', // En attente de validation par l'admin
+            'effectif'             => $request->effectif,
+            'annee_creation'       => $request->annee_creation,
+            'logo'                 => $logoPath,
+            'statut'               => 'en_attente',
         ]);
 
         return redirect()->route('entreprise.dashboard')
@@ -117,7 +109,7 @@ class DashboardController extends Controller
     }
 
     /**
-     * Afficher et modifier le profil entreprise
+     * Afficher le formulaire de modification du profil entreprise
      */
     public function editProfil()
     {
@@ -142,26 +134,32 @@ class DashboardController extends Controller
         }
 
         $request->validate([
-            'nom_entreprise' => 'required|string|max:255',
-            'description' => 'required|string|min:100',
-            'secteur_activite' => 'required|string|max:255',
-            'site_web' => 'nullable|url',
-            'adresse' => 'required|string|max:255',
-            'ville' => 'required|string|max:255',
+            'nom_entreprise'       => 'required|string|max:255',
+            'description'          => 'required|string|min:100',
+            'secteur_activite'     => 'required|string|max:255',
+            'site_web'             => 'nullable|url',
+            'adresse'              => 'required|string|max:255',
+            'ville'                => 'required|string|max:255',
             'telephone_entreprise' => 'required|string|max:20',
-            'effectif' => 'nullable|integer|min:1',
-            'annee_creation' => 'nullable|integer|min:1900|max:' . date('Y'),
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'effectif'             => 'nullable|integer|min:1',
+            'annee_creation'       => 'nullable|integer|min:1900|max:' . date('Y'),
+            'logo'                 => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        // Upload du nouveau logo si fourni
         $data = $request->except('logo');
+
         if ($request->hasFile('logo')) {
-            // Supprimer l'ancien logo
-            if ($entreprise->logo) {
-                \Storage::disk('public')->delete($entreprise->logo);
+            // Supprimer l'ancien logo sur Cloudinary si c'est une URL Cloudinary
+            if ($entreprise->logo && str_contains($entreprise->logo, 'cloudinary')) {
+                $publicId = pathinfo(parse_url($entreprise->logo, PHP_URL_PATH), PATHINFO_FILENAME);
+                cloudinary()->destroy('job_connect/logos/' . $publicId);
             }
-            $data['logo'] = $request->file('logo')->store('logos', 'public');
+
+            // Uploader le nouveau logo
+            $uploaded = cloudinary()->upload($request->file('logo')->getRealPath(), [
+                'folder' => 'job_connect/logos',
+            ]);
+            $data['logo'] = $uploaded->getSecurePath();
         }
 
         $entreprise->update($data);
