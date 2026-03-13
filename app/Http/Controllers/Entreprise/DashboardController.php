@@ -83,10 +83,18 @@ class DashboardController extends Controller
         // Upload du logo sur Cloudinary si fourni
         $logoPath = null;
         if ($request->hasFile('logo')) {
-            $uploaded = cloudinary()->upload($request->file('logo')->getRealPath(), [
-                'folder' => 'job_connect/logos',
+            $cloudinary = new \Cloudinary\Cloudinary([
+                'cloud' => [
+                    'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+                    'api_key'    => env('CLOUDINARY_API_KEY'),
+                    'api_secret' => env('CLOUDINARY_API_SECRET'),
+                ],
             ]);
-            $logoPath = $uploaded->getSecurePath();
+            $result = $cloudinary->uploadApi()->upload(
+                $request->file('logo')->getRealPath(),
+                ['folder' => 'job_connect/logos']
+            );
+            $logoPath = $result['secure_url'];
         }
 
         \App\Models\Entreprise::create([
@@ -149,17 +157,18 @@ class DashboardController extends Controller
         $data = $request->except('logo');
 
         if ($request->hasFile('logo')) {
-            // Supprimer l'ancien logo sur Cloudinary si c'est une URL Cloudinary
-            if ($entreprise->logo && str_contains($entreprise->logo, 'cloudinary')) {
-                $publicId = pathinfo(parse_url($entreprise->logo, PHP_URL_PATH), PATHINFO_FILENAME);
-                cloudinary()->destroy('job_connect/logos/' . $publicId);
-            }
-
-            // Uploader le nouveau logo
-            $uploaded = cloudinary()->upload($request->file('logo')->getRealPath(), [
-                'folder' => 'job_connect/logos',
+            $cloudinary = new \Cloudinary\Cloudinary([
+                'cloud' => [
+                    'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+                    'api_key'    => env('CLOUDINARY_API_KEY'),
+                    'api_secret' => env('CLOUDINARY_API_SECRET'),
+                ],
             ]);
-            $data['logo'] = $uploaded->getSecurePath();
+            $result = $cloudinary->uploadApi()->upload(
+                $request->file('logo')->getRealPath(),
+                ['folder' => 'job_connect/logos']
+            );
+            $data['logo'] = $result['secure_url'];
         }
 
         $entreprise->update($data);
