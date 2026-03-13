@@ -28,14 +28,14 @@
             <p class="text-gray-500 text-sm leading-relaxed mb-10">
                 Des centaines d'offres d'emploi et de stages vous attendent. Connectez-vous et décrochez votre prochaine opportunité.
             </p>
-            <div class="grid grid-cols-3 gap-3">
+            <!-- <div class="grid grid-cols-3 gap-3">
                 @foreach([['4+','Offres actives'],['4+','Entreprises'],['1+','Stages']] as $s)
                 <div class="rounded-2xl p-4" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08)">
                     <p class="text-yellow-400 font-extrabold text-xl">{{ $s[0] }}</p>
                     <p class="text-gray-500 text-xs mt-0.5">{{ $s[1] }}</p>
                 </div>
                 @endforeach
-            </div>
+            </div> -->
         </div>
     </div>
 

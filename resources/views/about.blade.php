@@ -301,9 +301,9 @@
             <div class="space-y-0">
                 <p class="text-gray-900 text-xs font-extrabold tracking-widest uppercase mb-8">Feuille de route</p>
                 @foreach([
-                    ['annee' => '2024', 'titre' => 'Lancement de JobConnect', 'desc' => 'Création de la plateforme avec les espaces candidat, entreprise et administration.', 'done' => true],
-                    ['annee' => '2025', 'titre' => 'Expansion nationale', 'desc' => 'Déploiement sur toutes les villes du Bénin et intégration d\'alertes emploi par SMS.', 'done' => false],
-                    ['annee' => '2026', 'titre' => 'Région Afrique de l\'Ouest', 'desc' => 'Ouverture à d\'autres pays francophones : Togo, Niger, Burkina Faso, Côte d\'Ivoire.', 'done' => false],
+                    ['annee' => '2025', 'titre' => 'Lancement de JobConnect', 'desc' => 'Création de la plateforme avec les espaces candidat, entreprise et administration.', 'done' => true],
+                    ['annee' => '2027', 'titre' => 'Expansion nationale', 'desc' => 'Déploiement sur toutes les villes du Bénin et intégration d\'alertes emploi par SMS.', 'done' => false],
+                    ['annee' => '2030', 'titre' => 'Région Afrique de l\'Ouest', 'desc' => 'Ouverture à d\'autres pays francophones : Togo, Niger, Burkina Faso, Côte d\'Ivoire.', 'done' => false],
                 ] as $i => $step)
                 <div class="flex gap-6 {{ $i < 2 ? 'pb-8' : '' }} relative">
                     {{-- Ligne verticale --}}
