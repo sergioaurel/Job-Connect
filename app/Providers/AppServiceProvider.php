@@ -14,8 +14,8 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        Paginator::useTailwind();
-        
+        Paginator::defaultView('vendor.pagination.tailwind'); // ← remplacer useTailwind()
+
         if (config('app.env') === 'production') {
             \URL::forceScheme('https');
         }

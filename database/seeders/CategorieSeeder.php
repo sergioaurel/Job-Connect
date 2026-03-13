@@ -10,6 +10,7 @@ class CategorieSeeder extends Seeder
     public function run(): void
     {
         $categories = [
+            // ── CATÉGORIES EXISTANTES ──────────────────────────────────────
             [
                 'nom' => 'Informatique et Technologies',
                 'description' => 'Développement web, mobile, cybersécurité, réseaux, IA, etc.',
@@ -83,6 +84,33 @@ class CategorieSeeder extends Seeder
             [
                 'nom' => 'Administration et Secrétariat',
                 'description' => 'Secrétaire, assistant administratif, office manager',
+                'is_active' => true,
+            ],
+
+            // ── NOUVELLES CATÉGORIES ───────────────────────────────────────
+            [
+                'nom' => 'Télécommunications',
+                'description' => 'Ingénieur réseau, technicien télécom, administrateur systèmes',
+                'is_active' => true,
+            ],
+            [
+                'nom' => 'Énergie et Environnement',
+                'description' => 'Technicien énergie solaire, électricien, ingénieur énergétique',
+                'is_active' => true,
+            ],
+            [
+                'nom' => 'Services Publics',
+                'description' => 'Fonctionnaire, agent d\'État, technicien des services publics',
+                'is_active' => true,
+            ],
+            [
+                'nom' => 'Microfinance et Économie Sociale',
+                'description' => 'Agent de crédit, conseiller microfinance, gestionnaire de portefeuille',
+                'is_active' => true,
+            ],
+            [
+                'nom' => 'Restauration et Livraison',
+                'description' => 'Livreur, gestionnaire de restaurant, cuisinier, barista',
                 'is_active' => true,
             ],
         ];

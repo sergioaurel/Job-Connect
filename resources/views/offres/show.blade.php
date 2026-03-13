@@ -197,31 +197,31 @@
                 </div>
                 @endif
 
-                {{-- Infos complémentaires --}}
-                <div class="bg-white border border-gray-200 rounded-2xl p-8">
-                    <h2 class="text-gray-900 font-extrabold text-xl mb-6 flex items-center gap-3">
-                        <span class="w-8 h-8 bg-yellow-50 rounded-lg flex items-center justify-center text-yellow-500 flex-shrink-0">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        </span>
-                        Informations complémentaires
-                    </h2>
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                        @foreach([
-                            ['label' => 'Niveau d\'études',  'value' => $offre->niveau_etude ?? 'Non précisé', 'icon' => '🎓'],
-                            ['label' => 'Expérience',        'value' => $offre->annees_experience == 0 ? 'Débutant accepté' : $offre->annees_experience.' an(s)', 'icon' => '💼'],
-                            ['label' => 'Postes ouverts',    'value' => $offre->nombre_postes ?? '1', 'icon' => '👥'],
-                            ['label' => 'Salaire',
-                             'value' => $offre->salaire_a_negocier ? 'À négocier' : (($offre->salaire_min || $offre->salaire_max) ? number_format($offre->salaire_min, 0, ',', ' ').' – '.number_format($offre->salaire_max, 0, ',', ' ').' FCFA' : 'Non précisé'),
-                             'icon' => '💰'],
-                        ] as $info)
-                        <div class="bg-gray-50 rounded-xl p-4 text-center">
-                            <div class="text-2xl mb-2">{{ $info['icon'] }}</div>
-                            <p class="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-1">{{ $info['label'] }}</p>
-                            <p class="text-gray-900 font-bold text-sm">{{ $info['value'] }}</p>
-                        </div>
-                        @endforeach
-                    </div>
-                </div>
+{{-- Infos complémentaires --}}
+<div class="bg-white border border-gray-200 rounded-2xl p-8">
+    <h2 class="text-gray-900 font-extrabold text-xl mb-6 flex items-center gap-3">
+        <span class="w-8 h-8 bg-yellow-50 rounded-lg flex items-center justify-center text-yellow-500 flex-shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </span>
+        Informations complémentaires
+    </h2>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        @foreach([
+            ['label' => 'Niveau d\'études',  'value' => $offre->niveau_etude ?? 'Non précisé', 'icon' => '🎓'],
+            ['label' => 'Expérience',        'value' => $offre->annees_experience == 0 ? 'Débutant accepté' : $offre->annees_experience.' an(s)', 'icon' => '💼'],
+            ['label' => 'Postes ouverts',    'value' => $offre->nombre_postes ?? '1', 'icon' => '👥'],
+            ['label' => 'Salaire',
+             'value' => $offre->salaire_a_negocier ? 'À négocier' : (($offre->salaire_min || $offre->salaire_max) ? number_format($offre->salaire_min, 0, ',', ' ').' – '.number_format($offre->salaire_max, 0, ',', ' ').' FCFA' : 'Non précisé'),
+             'icon' => '💰'],
+        ] as $info)
+        <div class="bg-gray-50 rounded-xl p-4 text-center flex flex-col items-center min-w-0">
+            <div class="text-2xl mb-2 flex-shrink-0">{{ $info['icon'] }}</div>
+            <p class="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-1 w-full truncate">{{ $info['label'] }}</p>
+            <p class="text-gray-900 font-bold text-sm break-words w-full leading-snug">{{ $info['value'] }}</p>
+        </div>
+        @endforeach
+    </div>
+</div>
 
                 {{-- CTA mobile --}}
                 <div class="lg:hidden bg-white border border-gray-200 rounded-2xl p-6">
