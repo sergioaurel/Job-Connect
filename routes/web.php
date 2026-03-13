@@ -25,12 +25,12 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 // Pages institutionnelles
 Route::get('/a-propos', [HomeController::class, 'about'])->name('about');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
+Route::post('/contact', [HomeController::class, 'contactSend'])->name('contact.send'); // ← AJOUTER
 
 // Offres publiques
 Route::get('/offres', [OffreController::class, 'index'])->name('offres.index');
 Route::get('/offres/{slug}', [OffreController::class, 'show'])->name('offres.show');
 Route::get('/categorie/{slug}', [OffreController::class, 'categorie'])->name('offres.categorie');
-
 /*
 |--------------------------------------------------------------------------
 | Routes Authentification (Laravel Breeze)
