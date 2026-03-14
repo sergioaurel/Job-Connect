@@ -9,19 +9,14 @@ use Illuminate\Support\Facades\Storage;
 
 class CandidatureController extends Controller
 {
-    /**
-     * Afficher le formulaire de candidature
-     */
     public function create($offreId)
     {
         $offre = Offre::with('entreprise')->findOrFail($offreId);
 
-        // Vérifier que c'est bien un candidat
         if (!auth()->user()->isCandidat()) {
             return redirect()->back()->with('error', 'Seuls les candidats peuvent postuler.');
         }
 
-        // Vérifier si déjà postulé
         $dejaPostule = Candidature::where('offre_id', $offreId)
             ->where('user_id', auth()->id())
             ->exists();
@@ -30,7 +25,6 @@ class CandidatureController extends Controller
             return redirect()->back()->with('error', 'Vous avez déjà postulé à cette offre.');
         }
 
-        // Vérifier si l'offre est active
         if (!$offre->isActive()) {
             return redirect()->back()->with('error', 'Cette offre n\'est plus disponible.');
         }
@@ -38,14 +32,11 @@ class CandidatureController extends Controller
         return view('candidatures.create', compact('offre'));
     }
 
-    /**
-     * Enregistrer une candidature
-     */
     public function store(Request $request, $offreId)
     {
         $request->validate([
             'lettre_motivation' => 'required|string|min:100',
-            'cv' => 'nullable|file|mimes:pdf|max:2048', // 2MB max
+            'cv' => 'nullable|file|mimes:pdf|max:2048',
         ], [
             'lettre_motivation.required' => 'La lettre de motivation est obligatoire.',
             'lettre_motivation.min' => 'La lettre de motivation doit contenir au moins 100 caractères.',
@@ -55,12 +46,10 @@ class CandidatureController extends Controller
 
         $offre = Offre::findOrFail($offreId);
 
-        // Vérifier que c'est un candidat
         if (!auth()->user()->isCandidat()) {
             return redirect()->back()->with('error', 'Seuls les candidats peuvent postuler.');
         }
 
-        // Vérifier si déjà postulé
         $dejaPostule = Candidature::where('offre_id', $offreId)
             ->where('user_id', auth()->id())
             ->exists();
@@ -69,28 +58,39 @@ class CandidatureController extends Controller
             return redirect()->back()->with('error', 'Vous avez déjà postulé à cette offre.');
         }
 
-        // Upload du CV si fourni
+        // Upload du CV sur Cloudinary si fourni
         $cvPath = null;
         if ($request->hasFile('cv')) {
-            $cvPath = $request->file('cv')->store('cvs', 'public');
+            $cloudinary = new \Cloudinary\Cloudinary([
+                'cloud' => [
+                    'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+                    'api_key'    => env('CLOUDINARY_API_KEY'),
+                    'api_secret' => env('CLOUDINARY_API_SECRET'),
+                ],
+            ]);
+            $result = $cloudinary->uploadApi()->upload(
+                $request->file('cv')->getRealPath(),
+                [
+                    'folder'        => 'job_connect/cvs',
+                    'resource_type' => 'raw', // Important pour les PDFs
+                    'format'        => 'pdf',
+                ]
+            );
+            $cvPath = $result['secure_url'];
         }
 
-        // Créer la candidature
         Candidature::create([
-            'offre_id' => $offreId,
-            'user_id' => auth()->id(),
+            'offre_id'          => $offreId,
+            'user_id'           => auth()->id(),
             'lettre_motivation' => $request->lettre_motivation,
-            'cv_path' => $cvPath,
-            'statut' => 'en_attente',
+            'cv_path'           => $cvPath,
+            'statut'            => 'en_attente',
         ]);
 
         return redirect()->route('candidat.candidatures')
             ->with('success', 'Votre candidature a été envoyée avec succès !');
     }
 
-    /**
-     * Ajouter/retirer une offre des favoris
-     */
     public function toggleFavori($offreId)
     {
         $offre = Offre::findOrFail($offreId);
@@ -102,20 +102,18 @@ class CandidatureController extends Controller
         $user = auth()->user();
 
         if ($user->favoris()->where('offre_id', $offreId)->exists()) {
-            // Retirer des favoris
             $user->favoris()->detach($offreId);
             $message = 'Offre retirée des favoris';
             $estFavori = false;
         } else {
-            // Ajouter aux favoris
             $user->favoris()->attach($offreId);
             $message = 'Offre ajoutée aux favoris';
             $estFavori = true;
         }
 
         return response()->json([
-            'success' => true,
-            'message' => $message,
+            'success'  => true,
+            'message'  => $message,
             'estFavori' => $estFavori,
         ]);
     }

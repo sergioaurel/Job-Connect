@@ -9,14 +9,6 @@ use Illuminate\Http\Request;
 
 class CandidatureEntrepriseController extends Controller
 {
-    // public function __construct()
-    // {
-    //     $this->middleware(['auth', 'entreprise']);
-    // }
-
-    /**
-     * Liste de toutes les candidatures reçues
-     */
     public function index(Request $request)
     {
         $entreprise = auth()->user()->entreprise;
@@ -28,19 +20,16 @@ class CandidatureEntrepriseController extends Controller
         $query = Candidature::whereIn('offre_id', $entreprise->offres->pluck('id'))
             ->with(['offre', 'candidat']);
 
-        // Filtre par statut
         if ($request->filled('statut')) {
             $query->where('statut', $request->statut);
         }
 
-        // Filtre par offre
         if ($request->filled('offre_id')) {
             $query->where('offre_id', $request->offre_id);
         }
 
         $candidatures = $query->latest()->paginate(15);
 
-        // Offres pour le filtre
         $offres = $entreprise->offres()
             ->select('id', 'titre')
             ->get();
@@ -48,9 +37,6 @@ class CandidatureEntrepriseController extends Controller
         return view('entreprise.candidatures.index', compact('candidatures', 'offres'));
     }
 
-    /**
-     * Candidatures pour une offre spécifique
-     */
     public function offreCandidatures($offreId)
     {
         $entreprise = auth()->user()->entreprise;
@@ -66,18 +52,14 @@ class CandidatureEntrepriseController extends Controller
         return view('entreprise.candidatures.offre', compact('offre', 'candidatures'));
     }
 
-    /**
-     * Voir le détail d'une candidature
-     */
     public function show($id)
     {
         $entreprise = auth()->user()->entreprise;
-        
+
         $candidature = Candidature::whereIn('offre_id', $entreprise->offres->pluck('id'))
             ->with(['offre', 'candidat.experiences', 'candidat.formations', 'candidat.competences'])
             ->findOrFail($id);
 
-        // Marquer comme vue si en attente
         if ($candidature->isEnAttente()) {
             $candidature->marquerVue();
         }
@@ -85,9 +67,6 @@ class CandidatureEntrepriseController extends Controller
         return view('entreprise.candidatures.show', compact('candidature'));
     }
 
-    /**
-     * Changer le statut d'une candidature
-     */
     public function changeStatus($id, Request $request)
     {
         $entreprise = auth()->user()->entreprise;
@@ -96,17 +75,17 @@ class CandidatureEntrepriseController extends Controller
             ->findOrFail($id);
 
         $request->validate([
-            'statut' => 'required|in:vue,retenue,rejetee',
+            'statut'         => 'required|in:vue,retenue,rejetee',
             'note_recruteur' => 'nullable|string|max:1000',
         ]);
 
         $candidature->update([
-            'statut' => $request->statut,
+            'statut'         => $request->statut,
             'note_recruteur' => $request->note_recruteur,
         ]);
 
         $messages = [
-            'vue' => 'Candidature marquée comme vue.',
+            'vue'     => 'Candidature marquée comme vue.',
             'retenue' => 'Candidature retenue avec succès.',
             'rejetee' => 'Candidature rejetée.',
         ];
@@ -115,7 +94,9 @@ class CandidatureEntrepriseController extends Controller
     }
 
     /**
-     * Télécharger le CV d'un candidat
+     * Télécharger / visualiser le CV d'un candidat
+     * Si le CV est sur Cloudinary (URL https), on redirige directement.
+     * Si le CV est encore sur le storage local (ancienne candidature), on tente le download.
      */
     public function downloadCV($id)
     {
@@ -128,6 +109,12 @@ class CandidatureEntrepriseController extends Controller
             return redirect()->back()->with('error', 'Aucun CV disponible pour cette candidature.');
         }
 
+        // Si c'est une URL Cloudinary, on redirige directement
+        if (str_starts_with($candidature->cv_path, 'http')) {
+            return redirect($candidature->cv_path);
+        }
+
+        // Sinon tentative de téléchargement local (anciennes candidatures)
         return \Storage::disk('public')->download($candidature->cv_path);
     }
 }
