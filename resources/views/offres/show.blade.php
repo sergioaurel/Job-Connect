@@ -33,7 +33,7 @@
             <div class="flex items-start gap-5">
                 {{-- Logo ou initiale --}}
                 @if($offre->entreprise->logo)
-                <img src="{{ asset('storage/' . $offre->entreprise->logo) }}"
+                <img src="{{ str_starts_with($offre->entreprise->logo, 'http') ? $offre->entreprise->logo : asset('storage/' . $offre->entreprise->logo) }}"
                      alt="{{ $offre->entreprise->nom_entreprise }}"
                      class="w-20 h-20 object-contain rounded-2xl border border-white/10 bg-white/5 p-2 flex-shrink-0">
                 @else
@@ -355,7 +355,7 @@
 
                     <div class="flex items-center gap-3 mb-4">
                         @if($offre->entreprise->logo)
-                        <img src="{{ asset('storage/' . $offre->entreprise->logo) }}"
+                        <img src="{{ str_starts_with($offre->entreprise->logo, 'http') ? $offre->entreprise->logo : asset('storage/' . $offre->entreprise->logo) }}"
                              alt="{{ $offre->entreprise->nom_entreprise }}"
                              class="w-12 h-12 object-contain rounded-xl border border-gray-200 bg-white p-1">
                         @else

@@ -149,7 +149,7 @@
                     {{-- Logo ou initiale --}}
                     <div class="flex flex-col items-end gap-3 flex-shrink-0">
                         @if($offre->entreprise->logo)
-                        <img src="{{ asset('storage/' . $offre->entreprise->logo) }}"
+                        <img src="{{ str_starts_with($offre->entreprise->logo, 'http') ? $offre->entreprise->logo : asset('storage/' . $offre->entreprise->logo) }}"
                              alt="{{ $offre->entreprise->nom_entreprise }}"
                              class="w-14 h-14 object-contain border border-gray-200 rounded-xl bg-white p-1">
                         @else

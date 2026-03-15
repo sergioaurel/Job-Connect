@@ -41,7 +41,7 @@
                         <p class="text-gray-500 text-sm">{{ $entreprise->secteur_activite }}</p>
                     </div>
                     @if($entreprise->logo)
-                        <img src="{{ asset('storage/' . $entreprise->logo) }}" alt="Logo" class="w-16 h-16 rounded-xl object-cover border border-gray-100">
+                        <img src="{{ str_starts_with($entreprise->logo, 'http') ? $entreprise->logo : asset('storage/' . $entreprise->logo) }}" alt="Logo" class="w-16 h-16 rounded-xl object-cover border border-gray-100">
                     @endif
                 </div>
 

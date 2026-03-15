@@ -45,7 +45,7 @@
                     <div>
                         <label class="block text-xs font-extrabold text-gray-500 uppercase tracking-widest mb-3">Logo actuel</label>
                         <div class="flex items-center gap-4">
-                            <img src="{{ asset('storage/' . $entreprise->logo) }}"
+                            <img src="{{ str_starts_with($entreprise->logo, 'http') ? $entreprise->logo : asset('storage/' . $entreprise->logo) }}"
                                  alt="{{ $entreprise->nom_entreprise }}"
                                  class="w-16 h-16 object-contain border border-gray-200 rounded-xl bg-white p-1">
                             <p class="text-xs text-gray-400">Téléchargez un nouveau fichier pour remplacer ce logo.</p>
