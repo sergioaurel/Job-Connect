@@ -98,42 +98,31 @@ class CandidatureEntrepriseController extends Controller
      * Si le CV est sur Cloudinary (URL https), on redirige directement.
      * Si le CV est encore sur le storage local (ancienne candidature), on tente le download.
      */
-    public function downloadCV($id)
-    {
-        $entreprise = auth()->user()->entreprise;
+public function downloadCV($id)
+{
+    $entreprise = auth()->user()->entreprise;
 
-        $candidature = Candidature::whereIn('offre_id', $entreprise->offres->pluck('id'))
-            ->findOrFail($id);
+    $candidature = Candidature::whereIn('offre_id', $entreprise->offres->pluck('id'))
+        ->findOrFail($id);
 
-        if (!$candidature->cv_path) {
-            return redirect()->back()->with('error', 'Aucun CV disponible pour cette candidature.');
-        }
-
-        // Si c'est une URL Cloudinary, télécharger via curl et retourner
-        if (str_starts_with($candidature->cv_path, 'http')) {
-            $cloudinary = new \Cloudinary\Cloudinary([
-                'cloud' => [
-                    'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
-                    'api_key'    => env('CLOUDINARY_API_KEY'),
-                    'api_secret' => env('CLOUDINARY_API_SECRET'),
-                ],
-            ]);
-
-            // Générer une URL signée valide 60 secondes
-            $signedUrl = $cloudinary->image($candidature->cv_path)->toUrl([
-                'resource_type' => 'raw',
-                'sign_url' => true,
-                'expires_at' => time() + 60,
-            ]);
-
-            $content = file_get_contents((string) $signedUrl);
-            
-            return response($content, 200, [
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'attachment; filename="cv.pdf"',
-            ]);
-        }
-
-        return \Storage::disk('public')->download($candidature->cv_path);
+    if (!$candidature->cv_path) {
+        return redirect()->back()->with('error', 'Aucun CV disponible pour cette candidature.');
     }
+
+    // Si c'est une URL Cloudinary
+    if (str_starts_with($candidature->cv_path, 'http')) {
+        $content = file_get_contents($candidature->cv_path);
+        
+        if ($content === false) {
+            return redirect()->back()->with('error', 'Impossible de télécharger le CV.');
+        }
+
+        return response($content, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="cv.pdf"',
+        ]);
+    }
+
+    return \Storage::disk('public')->download($candidature->cv_path);
+}
 }
