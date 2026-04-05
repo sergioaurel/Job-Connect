@@ -13,13 +13,13 @@
     <div class="absolute inset-0 bg-gradient-to-br from-gray-950 via-gray-950/80 to-transparent"></div>
     <div class="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
         <div class="max-w-3xl">
-            <div class="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full"
+            <!-- <div class="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full"
                  style="background:rgba(250,204,21,0.12);border:1px solid rgba(250,204,21,0.3)">
                 <span class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse inline-block"></span>
                 <span class="text-yellow-400 text-xs font-bold tracking-widest uppercase">
                     {{ $stats['total_offres'] }} offres disponibles maintenant au Bénin
                 </span>
-            </div>
+            </div> -->
             <h1 class="text-white font-extrabold mb-6 leading-tight"
                 style="font-size:clamp(2.2rem,5vw,4rem);letter-spacing:-0.025em">
                 Votre carrière<br>commence <span class="text-yellow-400">ici</span>,<br>
@@ -462,40 +462,141 @@
 })();
 </script> -->
 
+
 {{-- ═══════════════════════════════════════
-     FEATURES
+     FEATURES — Icônes SVG stylisées
 ═══════════════════════════════════════ --}}
 <section class="py-24 bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-            <p class="text-yellow-500 text-xs font-extrabold tracking-widest uppercase mb-3">Pourquoi nous choisir</p>
-            <h2 class="text-gray-900 font-extrabold text-4xl md:text-5xl" style="letter-spacing:-0.02em;line-height:1.1">
-                La plateforme emploi<br>faite pour le <span class="text-yellow-500">Bénin</span>
-            </h2>
+
+        {{-- Header --}}
+        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-16">
+            <div>
+                <p class="text-yellow-500 text-xs font-extrabold tracking-widest uppercase mb-3">Pourquoi nous choisir</p>
+                <h2 class="text-gray-900 font-extrabold leading-tight"
+                    style="font-size:clamp(2rem,4vw,3rem);letter-spacing:-0.03em;line-height:1.05">
+                    La plateforme emploi<br>faite pour le <span class="text-yellow-500">Bénin</span>
+                </h2>
+            </div>
+            <p class="text-gray-400 text-sm leading-relaxed max-w-xs lg:text-right">
+                Tout ce dont vous avez besoin pour trouver ou publier une offre, au même endroit.
+            </p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            @foreach([
-                ['icon'=>'🎯','title'=>'Offres 100% vérifiées','desc'=>'Toutes nos offres viennent d\'entreprises béninoises validées. Uniquement des opportunités réelles.','tag'=>'100% fiable'],
-                ['icon'=>'⚡','title'=>'Candidature en 1 clic','desc'=>'Créez votre profil une fois, postulez partout. CV et lettre envoyés instantanément.','tag'=>'< 60 secondes'],
-                ['icon'=>'📊','title'=>'Suivi en temps réel','desc'=>'Suivez chaque candidature depuis votre tableau de bord : en attente, vue, retenue.','tag'=>'Tableau de bord'],
-                ['icon'=>'🏢','title'=>'Entreprises validées','desc'=>'Chaque entreprise est vérifiée manuellement avant de publier. Votre sécurité d\'abord.','tag'=>'Vérification manuelle'],
-                ['icon'=>'🎓','title'=>'Stages & alternances','desc'=>'Étudiants, trouvez votre stage académique ou professionnel adapté à votre niveau.','tag'=>'3 types de stages'],
-                ['icon'=>'🔖','title'=>'Favoris & alertes','desc'=>'Sauvegardez les offres qui vous intéressent et ne manquez aucune opportunité.','tag'=>'Personnalisé'],
-            ] as $f)
-            <div class="bg-white border border-gray-200 rounded-2xl p-8 hover:-translate-y-1 hover:shadow-lg hover:border-yellow-300 transition-all duration-300 group">
-                <div class="text-4xl mb-4">{{ $f['icon'] }}</div>
-                <h3 class="text-gray-900 font-bold text-lg mb-3">{{ $f['title'] }}</h3>
-                <p class="text-gray-500 text-sm leading-relaxed mb-4">{{ $f['desc'] }}</p>
-                <span class="text-xs font-extrabold text-yellow-500 tracking-widest uppercase">{{ $f['tag'] }}</span>
-                <div class="mt-4 h-0.5 bg-gray-100 rounded-full">
-                    <div class="h-full bg-yellow-400 w-0 group-hover:w-full transition-all duration-500 rounded-full"></div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+            {{-- 1 — Offres vérifiées --}}
+            <div class="bg-white border border-gray-100 rounded-2xl p-7 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-gray-100/80 hover:border-yellow-200 transition-all duration-300 group cursor-default">
+                <div class="w-11 h-11 rounded-xl bg-gray-900 flex items-center justify-center mb-6 group-hover:bg-yellow-400 transition-colors duration-300">
+                    <svg class="w-5 h-5 text-yellow-400 group-hover:text-gray-900 transition-colors duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                    </svg>
+                </div>
+                <h3 class="text-gray-900 font-extrabold text-base mb-2">Offres 100% vérifiées</h3>
+                <p class="text-gray-400 text-sm leading-relaxed mb-5">Toutes nos offres viennent d'entreprises béninoises validées. Uniquement des opportunités réelles.</p>
+                <span class="inline-flex items-center gap-1.5 text-xs font-extrabold text-gray-400 tracking-widest uppercase">
+                    <span class="w-1.5 h-1.5 rounded-full bg-yellow-400 inline-block"></span>
+                    100% fiable
+                </span>
+                <div class="mt-5 h-px bg-gray-100 rounded-full">
+                    <div class="h-full bg-yellow-400 w-0 group-hover:w-full transition-all duration-700 rounded-full"></div>
                 </div>
             </div>
-            @endforeach
+
+            {{-- 2 — Candidature 1 clic --}}
+            <div class="bg-white border border-gray-100 rounded-2xl p-7 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-gray-100/80 hover:border-yellow-200 transition-all duration-300 group cursor-default">
+                <div class="w-11 h-11 rounded-xl bg-gray-900 flex items-center justify-center mb-6 group-hover:bg-yellow-400 transition-colors duration-300">
+                    <svg class="w-5 h-5 text-yellow-400 group-hover:text-gray-900 transition-colors duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                </div>
+                <h3 class="text-gray-900 font-extrabold text-base mb-2">Candidature en 1 clic</h3>
+                <p class="text-gray-400 text-sm leading-relaxed mb-5">Créez votre profil une fois, postulez partout. CV et lettre envoyés instantanément.</p>
+                <span class="inline-flex items-center gap-1.5 text-xs font-extrabold text-gray-400 tracking-widest uppercase">
+                    <span class="w-1.5 h-1.5 rounded-full bg-yellow-400 inline-block"></span>
+                    &lt; 60 secondes
+                </span>
+                <div class="mt-5 h-px bg-gray-100 rounded-full">
+                    <div class="h-full bg-yellow-400 w-0 group-hover:w-full transition-all duration-700 rounded-full"></div>
+                </div>
+            </div>
+
+            {{-- 3 — Suivi temps réel --}}
+            <div class="bg-white border border-gray-100 rounded-2xl p-7 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-gray-100/80 hover:border-yellow-200 transition-all duration-300 group cursor-default">
+                <div class="w-11 h-11 rounded-xl bg-gray-900 flex items-center justify-center mb-6 group-hover:bg-yellow-400 transition-colors duration-300">
+                    <svg class="w-5 h-5 text-yellow-400 group-hover:text-gray-900 transition-colors duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                </div>
+                <h3 class="text-gray-900 font-extrabold text-base mb-2">Suivi en temps réel</h3>
+                <p class="text-gray-400 text-sm leading-relaxed mb-5">Suivez chaque candidature depuis votre tableau de bord : en attente, vue, retenue.</p>
+                <span class="inline-flex items-center gap-1.5 text-xs font-extrabold text-gray-400 tracking-widest uppercase">
+                    <span class="w-1.5 h-1.5 rounded-full bg-yellow-400 inline-block"></span>
+                    Tableau de bord
+                </span>
+                <div class="mt-5 h-px bg-gray-100 rounded-full">
+                    <div class="h-full bg-yellow-400 w-0 group-hover:w-full transition-all duration-700 rounded-full"></div>
+                </div>
+            </div>
+
+            {{-- 4 — Entreprises validées --}}
+            <div class="bg-white border border-gray-100 rounded-2xl p-7 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-gray-100/80 hover:border-yellow-200 transition-all duration-300 group cursor-default">
+                <div class="w-11 h-11 rounded-xl bg-gray-900 flex items-center justify-center mb-6 group-hover:bg-yellow-400 transition-colors duration-300">
+                    <svg class="w-5 h-5 text-yellow-400 group-hover:text-gray-900 transition-colors duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                </div>
+                <h3 class="text-gray-900 font-extrabold text-base mb-2">Entreprises validées</h3>
+                <p class="text-gray-400 text-sm leading-relaxed mb-5">Chaque entreprise est vérifiée manuellement avant de publier. Votre sécurité d'abord.</p>
+                <span class="inline-flex items-center gap-1.5 text-xs font-extrabold text-gray-400 tracking-widest uppercase">
+                    <span class="w-1.5 h-1.5 rounded-full bg-yellow-400 inline-block"></span>
+                    Vérif. manuelle
+                </span>
+                <div class="mt-5 h-px bg-gray-100 rounded-full">
+                    <div class="h-full bg-yellow-400 w-0 group-hover:w-full transition-all duration-700 rounded-full"></div>
+                </div>
+            </div>
+
+            {{-- 5 — Stages --}}
+            <div class="bg-white border border-gray-100 rounded-2xl p-7 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-gray-100/80 hover:border-yellow-200 transition-all duration-300 group cursor-default">
+                <div class="w-11 h-11 rounded-xl bg-gray-900 flex items-center justify-center mb-6 group-hover:bg-yellow-400 transition-colors duration-300">
+                    <svg class="w-5 h-5 text-yellow-400 group-hover:text-gray-900 transition-colors duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
+                    </svg>
+                </div>
+                <h3 class="text-gray-900 font-extrabold text-base mb-2">Stages & alternances</h3>
+                <p class="text-gray-400 text-sm leading-relaxed mb-5">Étudiants, trouvez votre stage académique ou professionnel adapté à votre niveau.</p>
+                <span class="inline-flex items-center gap-1.5 text-xs font-extrabold text-gray-400 tracking-widest uppercase">
+                    <span class="w-1.5 h-1.5 rounded-full bg-yellow-400 inline-block"></span>
+                    3 types de stages
+                </span>
+                <div class="mt-5 h-px bg-gray-100 rounded-full">
+                    <div class="h-full bg-yellow-400 w-0 group-hover:w-full transition-all duration-700 rounded-full"></div>
+                </div>
+            </div>
+
+            {{-- 6 — Favoris — card sombre pour contraste --}}
+            <div class="bg-gray-900 border border-gray-800 rounded-2xl p-7 hover:-translate-y-1.5 hover:shadow-xl hover:border-yellow-400/30 transition-all duration-300 group cursor-default">
+                <div class="w-11 h-11 rounded-xl bg-yellow-400 flex items-center justify-center mb-6">
+                    <svg class="w-5 h-5 text-gray-900" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                    </svg>
+                </div>
+                <h3 class="text-white font-extrabold text-base mb-2">Favoris & alertes</h3>
+                <p class="text-gray-500 text-sm leading-relaxed mb-5">Sauvegardez les offres qui vous intéressent et ne manquez aucune opportunité.</p>
+                <span class="inline-flex items-center gap-1.5 text-xs font-extrabold text-gray-500 tracking-widest uppercase">
+                    <span class="w-1.5 h-1.5 rounded-full bg-yellow-400 inline-block"></span>
+                    Personnalisé
+                </span>
+                <div class="mt-5 h-px bg-white/5 rounded-full">
+                    <div class="h-full bg-yellow-400 w-0 group-hover:w-full transition-all duration-700 rounded-full"></div>
+                </div>
+            </div>
+
         </div>
     </div>
 </section>
-
 {{-- ═══════════════════════════════════════
      3 ÉTAPES
 ═══════════════════════════════════════ --}}
@@ -673,7 +774,11 @@
                 <div class="absolute -top-10 -right-10 w-48 h-48 rounded-full" style="background:rgba(250,204,21,0.1)"></div>
                 <div class="absolute -bottom-16 -left-5 w-36 h-36 rounded-full" style="background:rgba(250,204,21,0.05)"></div>
                 <div class="relative z-10">
-                    <span class="text-4xl block mb-4">👨‍💼</span>
+                    <div class="w-12 h-12 rounded-xl bg-yellow-400 flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-gray-900" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                    </div>
                     <p class="text-yellow-400 text-xs font-extrabold tracking-widest uppercase mb-2">Pour les candidats</p>
                     <h3 class="text-white font-extrabold text-3xl mb-4 leading-tight">Lancez votre<br>carrière dès aujourd'hui</h3>
                     <p class="text-gray-400 text-sm leading-relaxed mb-8">
@@ -696,7 +801,11 @@
             <div class="rounded-2xl p-10 relative overflow-hidden border-2 border-yellow-200 bg-yellow-50">
                 <div class="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-yellow-400/20"></div>
                 <div class="relative z-10">
-                    <span class="text-4xl block mb-4">🏢</span>
+                    <div class="w-12 h-12 rounded-xl bg-gray-900 border border-yellow-400/20 flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                        </svg>
+                    </div>
                     <p class="text-yellow-600 text-xs font-extrabold tracking-widest uppercase mb-2">Pour les entreprises</p>
                     <h3 class="text-gray-900 font-extrabold text-3xl mb-4 leading-tight">Recrutez les<br>meilleurs talents</h3>
                     <p class="text-gray-500 text-sm leading-relaxed mb-8">

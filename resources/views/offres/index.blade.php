@@ -16,13 +16,13 @@
     <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
             <div>
-                <div class="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full"
+                <!-- <div class="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full"
                      style="background:rgba(250,204,21,0.1);border:1px solid rgba(250,204,21,0.25)">
                     <span class="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse inline-block"></span>
                     <span class="text-yellow-400 text-xs font-extrabold tracking-widest uppercase">
                         {{ $offres->total() }} offre(s) disponible(s)
                     </span>
-                </div>
+                </div> -->
                 <h1 class="text-white font-extrabold leading-tight"
                     style="font-size:clamp(1.8rem,4vw,3rem);letter-spacing:-0.02em">
                     Offres d'emploi<br>& stages au <span class="text-yellow-400">Bénin</span>
