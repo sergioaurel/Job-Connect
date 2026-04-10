@@ -41,7 +41,7 @@
             </p>
 
             {{-- Conseils sécurité --}}
-            <div class="space-y-3 text-left">
+            <!-- <div class="space-y-3 text-left">
                 @foreach([
                     ['🔡', 'Au moins 8 caractères'],
                     ['🔢', 'Mélangez lettres et chiffres'],
@@ -53,7 +53,7 @@
                     <p class="text-gray-500 text-sm">{{ $tip[1] }}</p>
                 </div>
                 @endforeach
-            </div>
+            </div> -->
         </div>
     </div>
 

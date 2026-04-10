@@ -66,7 +66,6 @@ class CandidatureEntrepriseController extends Controller
 
         return view('entreprise.candidatures.show', compact('candidature'));
     }
-
     public function changeStatus($id, Request $request)
     {
         $entreprise = auth()->user()->entreprise;
@@ -75,19 +74,20 @@ class CandidatureEntrepriseController extends Controller
             ->findOrFail($id);
 
         $request->validate([
-            'statut'         => 'required|in:vue,retenue,rejetee',
-            'note_recruteur' => 'nullable|string|max:1000',
+            'statut'           => 'required|in:en_attente,vue,retenue,rejetee', // ← en_attente ajouté
+            'note_recruteur'  => 'nullable|string|max:2000',                   // ← notes avec s
         ]);
 
         $candidature->update([
-            'statut'         => $request->statut,
-            'note_recruteur' => $request->note_recruteur,
+            'statut'          => $request->statut,
+            'note_recruteur' => $request->note_recruteur, // ← notes avec s
         ]);
 
         $messages = [
-            'vue'     => 'Candidature marquée comme vue.',
-            'retenue' => 'Candidature retenue avec succès.',
-            'rejetee' => 'Candidature rejetée.',
+            'en_attente' => 'Candidature remise en attente.',
+            'vue'        => 'Candidature marquée comme vue.',
+            'retenue'    => 'Candidature retenue avec succès.',
+            'rejetee'    => 'Candidature rejetée.',
         ];
 
         return redirect()->back()->with('success', $messages[$request->statut]);
@@ -98,31 +98,31 @@ class CandidatureEntrepriseController extends Controller
      * Si le CV est sur Cloudinary (URL https), on redirige directement.
      * Si le CV est encore sur le storage local (ancienne candidature), on tente le download.
      */
-public function downloadCV($id)
-{
-    $entreprise = auth()->user()->entreprise;
+    public function downloadCV($id)
+    {
+        $entreprise = auth()->user()->entreprise;
 
-    $candidature = Candidature::whereIn('offre_id', $entreprise->offres->pluck('id'))
-        ->findOrFail($id);
+        $candidature = Candidature::whereIn('offre_id', $entreprise->offres->pluck('id'))
+            ->findOrFail($id);
 
-    if (!$candidature->cv_path) {
-        return redirect()->back()->with('error', 'Aucun CV disponible pour cette candidature.');
-    }
-
-    // Si c'est une URL Cloudinary
-    if (str_starts_with($candidature->cv_path, 'http')) {
-        $content = file_get_contents($candidature->cv_path);
-        
-        if ($content === false) {
-            return redirect()->back()->with('error', 'Impossible de télécharger le CV.');
+        if (!$candidature->cv_path) {
+            return redirect()->back()->with('error', 'Aucun CV disponible pour cette candidature.');
         }
 
-        return response($content, 200, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'attachment; filename="cv.pdf"',
-        ]);
-    }
+        // Si c'est une URL Cloudinary
+        if (str_starts_with($candidature->cv_path, 'http')) {
+            $content = file_get_contents($candidature->cv_path);
+            
+            if ($content === false) {
+                return redirect()->back()->with('error', 'Impossible de télécharger le CV.');
+            }
 
-    return \Storage::disk('public')->download($candidature->cv_path);
-}
+            return response($content, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="cv.pdf"',
+            ]);
+        }
+
+        return \Storage::disk('public')->download($candidature->cv_path);
+    }
 }

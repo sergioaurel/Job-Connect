@@ -62,15 +62,25 @@
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                        {{-- ✦ Secteur d'activité — SELECT --}}
                         <div>
                             <label for="secteur_activite" class="block text-sm font-semibold text-gray-700 mb-2">
                                 Secteur d'activité <span class="text-red-400">*</span>
                             </label>
-                            <input type="text" id="secteur_activite" name="secteur_activite"
-                                   value="{{ old('secteur_activite') }}" required
-                                   placeholder="Ex: Technologies, Finance..."
-                                   class="w-full px-4 py-3 text-sm rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:bg-white focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 transition-all">
+                            <select id="secteur_activite" name="secteur_activite" required
+                                class="w-full px-4 py-3 text-sm rounded-xl border bg-gray-50 text-gray-900 focus:outline-none focus:bg-white focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 transition-all appearance-none
+                                @error('secteur_activite') border-red-400 bg-red-50 @else border-gray-200 @enderror">
+                                <option value="">Sélectionner un secteur...</option>
+                                @foreach($secteurs as $secteur)
+                                <option value="{{ $secteur }}" {{ old('secteur_activite') == $secteur ? 'selected' : '' }}>
+                                    {{ $secteur }}
+                                </option>
+                                @endforeach
+                            </select>
+                            @error('secteur_activite') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
                         </div>
+
                         <div>
                             <label for="site_web" class="block text-sm font-semibold text-gray-700 mb-2">Site web</label>
                             <input type="url" id="site_web" name="site_web"

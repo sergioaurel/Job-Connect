@@ -8,11 +8,42 @@ use Illuminate\Http\Request;
 class DashboardController extends Controller
 {
     /**
+     * Liste des secteurs d'activité — extraits du seeder
+     */
+    public static function getSecteurs(): array
+    {
+        return [
+            'Agriculture et Environnement',
+            'Art et Design',
+            'Banque et Assurance',
+            'Commerce et Distribution',
+            'Communication et Médias',
+            'Éducation et Formation',
+            'Énergie',
+            'Énergie Renouvelable',
+            'Finance et Comptabilité',
+            'Hôtellerie et Restauration',
+            'Informatique et Technologies',
+            'Ingénierie et BTP',
+            'Juridique et Droit',
+            'Marketing et Communication',
+            'Microfinance',
+            'Ressources Humaines',
+            'Restauration et Tech',
+            'Santé et Médical',
+            'Services Publics',
+            'Télécommunications',
+            'Transport et Logistique',
+            'Autre',
+        ];
+    }
+
+    /**
      * Tableau de bord de l'entreprise
      */
     public function index()
     {
-        $user = auth()->user();
+        $user       = auth()->user();
         $entreprise = $user->entreprise;
 
         if (!$entreprise) {
@@ -21,12 +52,12 @@ class DashboardController extends Controller
         }
 
         $stats = [
-            'total_offres' => $entreprise->offres()->count(),
-            'offres_actives' => $entreprise->offres()->where('statut', 'active')->count(),
-            'total_candidatures' => $entreprise->totalCandidatures(),
-            'candidatures_en_attente' => \App\Models\Candidature::whereIn('offre_id', $entreprise->offres->pluck('id'))
-                ->where('statut', 'en_attente')
-                ->count(),
+            'total_offres'             => $entreprise->offres()->count(),
+            'offres_actives'           => $entreprise->offres()->where('statut', 'active')->count(),
+            'total_candidatures'       => $entreprise->totalCandidatures(),
+            'candidatures_en_attente'  => \App\Models\Candidature::whereIn('offre_id', $entreprise->offres->pluck('id'))
+                                            ->where('statut', 'en_attente')
+                                            ->count(),
         ];
 
         $offres = $entreprise->offres()
@@ -45,7 +76,7 @@ class DashboardController extends Controller
     }
 
     /**
-     * Afficher le formulaire de création de profil entreprise
+     * Formulaire de création de profil entreprise
      */
     public function createProfil()
     {
@@ -53,7 +84,9 @@ class DashboardController extends Controller
             return redirect()->route('entreprise.dashboard');
         }
 
-        return view('entreprise.create-profil');
+        $secteurs = self::getSecteurs();
+
+        return view('entreprise.create-profil', compact('secteurs'));
     }
 
     /**
@@ -80,7 +113,6 @@ class DashboardController extends Controller
             'logo.max'                => 'Le logo ne doit pas dépasser 2 Mo.',
         ]);
 
-        // Upload du logo sur Cloudinary si fourni
         $logoPath = null;
         if ($request->hasFile('logo')) {
             $cloudinary = new \Cloudinary\Cloudinary([
@@ -90,7 +122,7 @@ class DashboardController extends Controller
                     'api_secret' => env('CLOUDINARY_API_SECRET'),
                 ],
             ]);
-            $result = $cloudinary->uploadApi()->upload(
+            $result    = $cloudinary->uploadApi()->upload(
                 $request->file('logo')->getRealPath(),
                 ['folder' => 'job_connect/logos']
             );
@@ -113,11 +145,11 @@ class DashboardController extends Controller
         ]);
 
         return redirect()->route('entreprise.dashboard')
-            ->with('success', 'Votre profil a été créé avec succès. Il sera validé par un administrateur sous peu.');
+            ->with('success', 'Votre profil a été créé. Il sera validé par un administrateur sous peu.');
     }
 
     /**
-     * Afficher le formulaire de modification du profil entreprise
+     * Formulaire de modification du profil entreprise
      */
     public function editProfil()
     {
@@ -127,7 +159,9 @@ class DashboardController extends Controller
             return redirect()->route('entreprise.profil.create');
         }
 
-        return view('entreprise.edit-profil', compact('entreprise'));
+        $secteurs = self::getSecteurs();
+
+        return view('entreprise.edit-profil', compact('entreprise', 'secteurs'));
     }
 
     /**
@@ -164,7 +198,7 @@ class DashboardController extends Controller
                     'api_secret' => env('CLOUDINARY_API_SECRET'),
                 ],
             ]);
-            $result = $cloudinary->uploadApi()->upload(
+            $result       = $cloudinary->uploadApi()->upload(
                 $request->file('logo')->getRealPath(),
                 ['folder' => 'job_connect/logos']
             );

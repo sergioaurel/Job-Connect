@@ -56,6 +56,8 @@ Route::middleware(['auth', 'candidat'])->prefix('candidat')->name('candidat.')->
     // Mes favoris
     Route::get('/favoris', [CandidatDashboardController::class, 'favoris'])->name('favoris');
     
+    Route::get('/recommandations', [CandidatDashboardController::class, 'recommandations'])->name('recommandations');
+
     // Gestion du profil
     Route::get('/profil', [ProfilController::class, 'index'])->name('profil');
     Route::put('/profil/infos', [ProfilController::class, 'updateInfos'])->name('profil.update-infos');

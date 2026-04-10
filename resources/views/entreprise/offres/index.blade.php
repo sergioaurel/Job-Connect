@@ -100,7 +100,7 @@
                                 <td class="px-6 py-4 text-sm text-gray-400">{{ $offre->created_at->format('d/m/Y') }}</td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center justify-end gap-2">
-                                        <a href="{{ route('offres.show', $offre->slug) }}" target="_blank"
+                                        <a href="{{ route('entreprise.offres.show', $offre->id) }}" target="_blank"
                                            class="px-3 py-1.5 border border-gray-200 text-gray-600 text-xs font-bold rounded-lg hover:border-gray-400 transition-all">
                                             Voir
                                         </a>

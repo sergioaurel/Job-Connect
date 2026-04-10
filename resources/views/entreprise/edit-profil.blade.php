@@ -29,6 +29,15 @@
 <div class="bg-gray-50 min-h-screen">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
+        @if(session('success'))
+        <div class="mb-6 flex items-center gap-3 px-5 py-3.5 bg-green-50 border border-green-200 rounded-2xl text-green-700 text-sm font-semibold">
+            <svg class="w-5 h-5 flex-shrink-0 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            {{ session('success') }}
+        </div>
+        @endif
+
         <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden">
             <form action="{{ route('entreprise.profil.update') }}" method="POST" enctype="multipart/form-data">
                 @csrf
@@ -75,14 +84,32 @@
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                        {{-- ✦ Secteur d'activité — SELECT avec valeur courante pré-sélectionnée --}}
                         <div>
                             <label for="secteur_activite" class="block text-sm font-semibold text-gray-700 mb-2">
                                 Secteur d'activité <span class="text-red-400">*</span>
                             </label>
-                            <input type="text" id="secteur_activite" name="secteur_activite"
-                                   value="{{ old('secteur_activite', $entreprise->secteur_activite) }}" required
-                                   class="w-full px-4 py-3 text-sm rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:bg-white focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 transition-all">
+                            <select id="secteur_activite" name="secteur_activite" required
+                                class="w-full px-4 py-3 text-sm rounded-xl border bg-gray-50 text-gray-900 focus:outline-none focus:bg-white focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 transition-all appearance-none
+                                @error('secteur_activite') border-red-400 bg-red-50 @else border-gray-200 @enderror">
+                                <option value="">Sélectionner un secteur...</option>
+                                @foreach($secteurs as $secteur)
+                                <option value="{{ $secteur }}"
+                                    {{ old('secteur_activite', $entreprise->secteur_activite) == $secteur ? 'selected' : '' }}>
+                                    {{ $secteur }}
+                                </option>
+                                @endforeach
+                                {{-- Si le secteur actuel n'est pas dans la liste, l'ajouter --}}
+                                @if($entreprise->secteur_activite && !in_array($entreprise->secteur_activite, $secteurs))
+                                <option value="{{ $entreprise->secteur_activite }}" selected>
+                                    {{ $entreprise->secteur_activite }}
+                                </option>
+                                @endif
+                            </select>
+                            @error('secteur_activite') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
                         </div>
+
                         <div>
                             <label for="site_web" class="block text-sm font-semibold text-gray-700 mb-2">Site web</label>
                             <input type="url" id="site_web" name="site_web"

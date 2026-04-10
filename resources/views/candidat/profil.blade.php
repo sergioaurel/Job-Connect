@@ -4,9 +4,6 @@
 
 @section('content')
 
-{{-- ═══════════════════════════════════════
-     HEADER ESPACE CANDIDAT
-═══════════════════════════════════════ --}}
 <div class="bg-gray-950 border-b border-white/10">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-0">
         <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
@@ -16,7 +13,6 @@
                 <p class="text-gray-500 text-sm mt-1">Gérez vos informations professionnelles</p>
             </div>
         </div>
-        {{-- Navigation tabs --}}
         <nav class="flex gap-1 overflow-x-auto scrollbar-hide">
             @php
             $tabs = [
@@ -40,9 +36,6 @@
     </div>
 </div>
 
-{{-- ═══════════════════════════════════════
-     CONTENU
-═══════════════════════════════════════ --}}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
     @php
@@ -54,13 +47,21 @@
         if($competences->count() > 0)  $completion += 20;
     @endphp
 
-    {{-- Flash messages --}}
     @if(session('success'))
     <div class="mb-6 flex items-center gap-3 px-5 py-3.5 bg-green-50 border border-green-200 rounded-2xl text-green-700 text-sm font-semibold">
         <svg class="w-5 h-5 flex-shrink-0 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
         {{ session('success') }}
+    </div>
+    @endif
+
+    @if(session('error'))
+    <div class="mb-6 flex items-center gap-3 px-5 py-3.5 bg-red-50 border border-red-200 rounded-2xl text-red-700 text-sm font-semibold">
+        <svg class="w-5 h-5 flex-shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+        {{ session('error') }}
     </div>
     @endif
 
@@ -71,7 +72,6 @@
 
             {{-- Carte identité --}}
             <div class="bg-white border border-gray-200 rounded-2xl p-6">
-                {{-- Avatar --}}
                 <div class="flex flex-col items-center text-center mb-6">
                     <div class="w-20 h-20 rounded-2xl bg-gray-900 flex items-center justify-center mb-4 text-white font-extrabold text-2xl">
                         {{ strtoupper(substr($user->name, 0, 1)) }}
@@ -79,8 +79,6 @@
                     <h2 class="text-gray-900 font-extrabold text-lg">{{ $user->name }}</h2>
                     <p class="text-gray-500 text-sm mt-0.5">{{ $user->email }}</p>
                 </div>
-
-                {{-- Infos rapides --}}
                 <div class="space-y-3 border-t border-gray-100 pt-5">
                     <div class="flex items-center gap-3">
                         <div class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
@@ -100,6 +98,17 @@
                             <p class="text-gray-900 text-sm font-semibold">{{ $user->localisation ?? '—' }}</p>
                         </div>
                     </div>
+                    @if($user->type_contrat_souhaite)
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        </div>
+                        <div>
+                            <p class="text-gray-400 text-xs">Contrat souhaité</p>
+                            <p class="text-gray-900 text-sm font-semibold">{{ $typesContrat[$user->type_contrat_souhaite] ?? $user->type_contrat_souhaite }}</p>
+                        </div>
+                    </div>
+                    @endif
                     <div class="flex items-center gap-3">
                         <div class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
                             <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
@@ -119,16 +128,15 @@
                     <span class="text-yellow-500 font-extrabold text-sm">{{ $completion }}%</span>
                 </div>
                 <div class="w-full bg-gray-100 rounded-full h-2 mb-4">
-                    <div class="h-2 rounded-full bg-yellow-400 transition-all duration-500"
-                         style="width:{{ $completion }}%"></div>
+                    <div class="h-2 rounded-full bg-yellow-400 transition-all duration-500" style="width:{{ $completion }}%"></div>
                 </div>
                 <div class="space-y-2">
                     @foreach([
-                        ['done' => (bool)$user->telephone,          'label' => 'Téléphone renseigné'],
-                        ['done' => (bool)$user->localisation,       'label' => 'Localisation renseignée'],
-                        ['done' => $experiences->count() > 0,       'label' => 'Au moins 1 expérience'],
-                        ['done' => $formations->count() > 0,        'label' => 'Au moins 1 formation'],
-                        ['done' => $competences->count() > 0,       'label' => 'Au moins 1 compétence'],
+                        ['done' => (bool)$user->telephone,         'label' => 'Téléphone renseigné'],
+                        ['done' => (bool)$user->localisation,      'label' => 'Localisation renseignée'],
+                        ['done' => $experiences->count() > 0,      'label' => 'Au moins 1 expérience'],
+                        ['done' => $formations->count() > 0,       'label' => 'Au moins 1 formation'],
+                        ['done' => $competences->count() > 0,      'label' => 'Au moins 1 compétence'],
                     ] as $step)
                     <div class="flex items-center gap-2.5">
                         @if($step['done'])
@@ -152,7 +160,7 @@
         {{-- ─── CONTENU PRINCIPAL ─── --}}
         <div class="lg:col-span-2 space-y-6">
 
-            {{-- ── 1. Informations personnelles ── --}}
+            {{-- ══ 1. Informations personnelles ══ --}}
             <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
                     <div class="w-8 h-8 rounded-xl bg-yellow-400 flex items-center justify-center">
@@ -165,12 +173,14 @@
                         @csrf
                         @method('PUT')
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+
                             <div>
                                 <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">Nom complet *</label>
                                 <input type="text" name="name" value="{{ old('name', $user->name) }}" required
                                     class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all">
                                 @error('name')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                             </div>
+
                             <div>
                                 <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">Téléphone *</label>
                                 <input type="text" name="telephone" value="{{ old('telephone', $user->telephone) }}" required
@@ -178,13 +188,22 @@
                                     class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all">
                                 @error('telephone')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                             </div>
+
+                            {{-- Localisation — SELECT ville --}}
                             <div class="sm:col-span-2">
                                 <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">Localisation *</label>
-                                <input type="text" name="localisation" value="{{ old('localisation', $user->localisation) }}" required
-                                    placeholder="Cotonou, Akpakpa"
-                                    class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all">
+                                <select name="localisation" required
+                                    class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all appearance-none">
+                                    <option value="">Sélectionner votre ville...</option>
+                                    @foreach($villes as $ville)
+                                    <option value="{{ $ville }}" {{ old('localisation', $user->localisation) == $ville ? 'selected' : '' }}>
+                                        {{ $ville }}
+                                    </option>
+                                    @endforeach
+                                </select>
                                 @error('localisation')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                             </div>
+
                         </div>
                         <button type="submit"
                                 class="px-6 py-2.5 bg-gray-900 text-white font-extrabold text-xs rounded-xl hover:bg-yellow-400 hover:text-gray-900 transition-all">
@@ -194,7 +213,7 @@
                 </div>
             </div>
 
-            {{-- ── 2. Expériences professionnelles ── --}}
+            {{-- ══ 2. Expériences professionnelles ══ --}}
             <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                     <div class="flex items-center gap-3">
@@ -210,7 +229,6 @@
                     </button>
                 </div>
 
-                {{-- Formulaire --}}
                 <div id="experience-form" class="hidden border-b border-gray-100 p-6" style="background:rgba(250,204,21,0.04)">
                     <p class="text-xs font-extrabold text-gray-500 uppercase tracking-widest mb-4">Nouvelle expérience</p>
                     <form action="{{ route('candidat.profil.add-experience') }}" method="POST">
@@ -218,28 +236,23 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                             <div>
                                 <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">Poste *</label>
-                                <input type="text" name="poste" required
-                                    class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all">
+                                <input type="text" name="poste" required class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all">
                             </div>
                             <div>
                                 <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">Entreprise *</label>
-                                <input type="text" name="entreprise" required
-                                    class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all">
+                                <input type="text" name="entreprise" required class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all">
                             </div>
                             <div>
                                 <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">Ville</label>
-                                <input type="text" name="ville"
-                                    class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all">
+                                <input type="text" name="ville" class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all">
                             </div>
                             <div>
                                 <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">Date de début *</label>
-                                <input type="date" name="date_debut" required
-                                    class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all">
+                                <input type="date" name="date_debut" required class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all">
                             </div>
                             <div>
                                 <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">Date de fin</label>
-                                <input type="date" name="date_fin" id="date_fin"
-                                    class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all">
+                                <input type="date" name="date_fin" id="date_fin" class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all">
                             </div>
                             <div class="flex items-center">
                                 <label class="flex items-center gap-2 cursor-pointer select-none">
@@ -253,24 +266,16 @@
                             </div>
                             <div class="sm:col-span-2">
                                 <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">Description</label>
-                                <textarea name="description" rows="3"
-                                    class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all resize-none"></textarea>
+                                <textarea name="description" rows="3" class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all resize-none"></textarea>
                             </div>
                         </div>
                         <div class="flex gap-2">
-                            <button type="submit"
-                                    class="px-5 py-2.5 bg-gray-900 text-white font-extrabold text-xs rounded-xl hover:bg-yellow-400 hover:text-gray-900 transition-all">
-                                Ajouter l'expérience
-                            </button>
-                            <button type="button" onclick="toggleForm('experience-form')"
-                                    class="px-5 py-2.5 border border-gray-200 text-gray-600 font-extrabold text-xs rounded-xl hover:bg-gray-50 transition-all">
-                                Annuler
-                            </button>
+                            <button type="submit" class="px-5 py-2.5 bg-gray-900 text-white font-extrabold text-xs rounded-xl hover:bg-yellow-400 hover:text-gray-900 transition-all">Ajouter l'expérience</button>
+                            <button type="button" onclick="toggleForm('experience-form')" class="px-5 py-2.5 border border-gray-200 text-gray-600 font-extrabold text-xs rounded-xl hover:bg-gray-50 transition-all">Annuler</button>
                         </div>
                     </form>
                 </div>
 
-                {{-- Liste --}}
                 <div class="divide-y divide-gray-50">
                     @forelse($experiences as $exp)
                     <div class="p-6 hover:bg-gray-50 transition-colors group">
@@ -283,16 +288,12 @@
                                     <p class="text-gray-900 font-extrabold text-sm">{{ $exp->poste }}</p>
                                     <p class="text-gray-600 text-sm">{{ $exp->entreprise }}{{ $exp->ville ? ' · '.$exp->ville : '' }}</p>
                                     <p class="text-gray-400 text-xs mt-1">{{ $exp->periode() }}</p>
-                                    @if($exp->description)
-                                    <p class="text-gray-500 text-sm mt-2 leading-relaxed">{{ $exp->description }}</p>
-                                    @endif
+                                    @if($exp->description)<p class="text-gray-500 text-sm mt-2 leading-relaxed">{{ $exp->description }}</p>@endif
                                 </div>
                             </div>
-                            <form action="{{ route('candidat.profil.delete-experience', $exp->id) }}" method="POST"
-                                  onsubmit="return confirm('Supprimer cette expérience ?')">
+                            <form action="{{ route('candidat.profil.delete-experience', $exp->id) }}" method="POST" onsubmit="return confirm('Supprimer cette expérience ?')">
                                 @csrf @method('DELETE')
-                                <button type="submit"
-                                        class="opacity-0 group-hover:opacity-100 w-8 h-8 rounded-xl bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-600 flex items-center justify-center transition-all flex-shrink-0">
+                                <button type="submit" class="opacity-0 group-hover:opacity-100 w-8 h-8 rounded-xl bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-600 flex items-center justify-center transition-all flex-shrink-0">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                 </button>
                             </form>
@@ -301,21 +302,18 @@
                     @empty
                     <div class="px-6 py-10 text-center">
                         <p class="text-gray-400 text-sm">Aucune expérience ajoutée.</p>
-                        <button onclick="toggleForm('experience-form')"
-                                class="mt-2 text-yellow-500 font-extrabold text-xs hover:text-yellow-600 transition-colors">
-                            + Ajouter ma première expérience
-                        </button>
+                        <button onclick="toggleForm('experience-form')" class="mt-2 text-yellow-500 font-extrabold text-xs hover:text-yellow-600 transition-colors">+ Ajouter ma première expérience</button>
                     </div>
                     @endforelse
                 </div>
             </div>
 
-            {{-- ── 3. Formations ── --}}
+            {{-- ══ 3. Formations + Type de contrat souhaité ══ --}}
             <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="w-8 h-8 rounded-xl bg-green-100 flex items-center justify-center">
-                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5z"/><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"/></svg>
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
                         </div>
                         <h3 class="text-gray-900 font-extrabold text-base">Formations</h3>
                     </div>
@@ -326,33 +324,87 @@
                     </button>
                 </div>
 
-                {{-- Formulaire --}}
+                {{-- ✦ Type de contrat souhaité — placé ici dans la section Formations --}}
+                <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+                    <form action="{{ route('candidat.profil.update-infos') }}" method="POST" class="flex flex-col sm:flex-row sm:items-center gap-3">
+                        @csrf
+                        @method('PUT')
+                        {{-- Champs cachés pour ne pas écraser les autres valeurs --}}
+                        <input type="hidden" name="name"         value="{{ $user->name }}">
+                        <input type="hidden" name="telephone"    value="{{ $user->telephone }}">
+                        <input type="hidden" name="localisation" value="{{ $user->localisation }}">
+
+                        <div class="flex items-center gap-2 flex-shrink-0">
+                            <div class="w-7 h-7 rounded-lg bg-indigo-100 flex items-center justify-center">
+                                <svg class="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            </div>
+                            <label class="text-xs font-extrabold text-gray-700 uppercase tracking-widest whitespace-nowrap">
+                                Type de contrat souhaité
+                            </label>
+                        </div>
+
+                        <select name="type_contrat_souhaite"
+                            onchange="this.form.submit()"
+                            class="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all appearance-none">
+                            <option value="">Peu importe</option>
+                            @foreach($typesContrat as $value => $label)
+                            <option value="{{ $value }}" {{ $user->type_contrat_souhaite == $value ? 'selected' : '' }}>
+                                {{ $label }}
+                            </option>
+                            @endforeach
+                        </select>
+
+                        <p class="text-gray-400 text-xs sm:hidden">Influence vos recommandations d'offres</p>
+                    </form>
+                    <p class="text-gray-400 text-xs mt-2 hidden sm:block">
+                        Ce choix influence directement les offres recommandées sur votre tableau de bord.
+                    </p>
+                </div>
+
+                {{-- Formulaire ajout formation --}}
                 <div id="formation-form" class="hidden border-b border-gray-100 p-6" style="background:rgba(250,204,21,0.04)">
                     <p class="text-xs font-extrabold text-gray-500 uppercase tracking-widest mb-4">Nouvelle formation</p>
                     <form action="{{ route('candidat.profil.add-formation') }}" method="POST">
                         @csrf
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+
+                            {{-- Diplôme SELECT --}}
                             <div>
                                 <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">Diplôme *</label>
-                                <input type="text" name="diplome" required placeholder="Licence, Master, BTS..."
-                                    class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all">
+                                <select name="diplome" required
+                                    class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all appearance-none">
+                                    <option value="">Sélectionner un diplôme...</option>
+                                    @foreach($diplomes as $diplome)
+                                    <option value="{{ $diplome }}">{{ $diplome }}</option>
+                                    @endforeach
+                                </select>
                             </div>
+
                             <div>
                                 <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">Établissement *</label>
                                 <input type="text" name="etablissement" required placeholder="UAC, EPAC, EIG..."
                                     class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all">
                             </div>
+
+                            {{-- Domaine SELECT --}}
                             <div>
                                 <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">Domaine</label>
-                                <input type="text" name="domaine" placeholder="Informatique, Gestion..."
-                                    class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all">
+                                <select name="domaine"
+                                    class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all appearance-none">
+                                    <option value="">Sélectionner un domaine...</option>
+                                    @foreach($domaines as $domaine)
+                                    <option value="{{ $domaine }}">{{ $domaine }}</option>
+                                    @endforeach
+                                </select>
                             </div>
+
                             <div>
                                 <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">Année d'obtention *</label>
                                 <input type="number" name="annee_obtention" min="1950" max="{{ date('Y') + 5 }}" required
                                     placeholder="{{ date('Y') }}"
                                     class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all">
                             </div>
+
                             <div class="sm:col-span-2">
                                 <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">Description</label>
                                 <textarea name="description" rows="2"
@@ -360,19 +412,13 @@
                             </div>
                         </div>
                         <div class="flex gap-2">
-                            <button type="submit"
-                                    class="px-5 py-2.5 bg-gray-900 text-white font-extrabold text-xs rounded-xl hover:bg-yellow-400 hover:text-gray-900 transition-all">
-                                Ajouter la formation
-                            </button>
-                            <button type="button" onclick="toggleForm('formation-form')"
-                                    class="px-5 py-2.5 border border-gray-200 text-gray-600 font-extrabold text-xs rounded-xl hover:bg-gray-50 transition-all">
-                                Annuler
-                            </button>
+                            <button type="submit" class="px-5 py-2.5 bg-gray-900 text-white font-extrabold text-xs rounded-xl hover:bg-yellow-400 hover:text-gray-900 transition-all">Ajouter la formation</button>
+                            <button type="button" onclick="toggleForm('formation-form')" class="px-5 py-2.5 border border-gray-200 text-gray-600 font-extrabold text-xs rounded-xl hover:bg-gray-50 transition-all">Annuler</button>
                         </div>
                     </form>
                 </div>
 
-                {{-- Liste --}}
+                {{-- Liste formations --}}
                 <div class="divide-y divide-gray-50">
                     @forelse($formations as $formation)
                     <div class="p-6 hover:bg-gray-50 transition-colors group">
@@ -385,16 +431,12 @@
                                     <p class="text-gray-900 font-extrabold text-sm">{{ $formation->diplome }}</p>
                                     <p class="text-gray-600 text-sm">{{ $formation->etablissement }}{{ $formation->domaine ? ' · '.$formation->domaine : '' }}</p>
                                     <p class="text-gray-400 text-xs mt-1">{{ $formation->annee_obtention }}</p>
-                                    @if($formation->description)
-                                    <p class="text-gray-500 text-sm mt-2 leading-relaxed">{{ $formation->description }}</p>
-                                    @endif
+                                    @if($formation->description)<p class="text-gray-500 text-sm mt-2 leading-relaxed">{{ $formation->description }}</p>@endif
                                 </div>
                             </div>
-                            <form action="{{ route('candidat.profil.delete-formation', $formation->id) }}" method="POST"
-                                  onsubmit="return confirm('Supprimer cette formation ?')">
+                            <form action="{{ route('candidat.profil.delete-formation', $formation->id) }}" method="POST" onsubmit="return confirm('Supprimer cette formation ?')">
                                 @csrf @method('DELETE')
-                                <button type="submit"
-                                        class="opacity-0 group-hover:opacity-100 w-8 h-8 rounded-xl bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-600 flex items-center justify-center transition-all flex-shrink-0">
+                                <button type="submit" class="opacity-0 group-hover:opacity-100 w-8 h-8 rounded-xl bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-600 flex items-center justify-center transition-all flex-shrink-0">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                 </button>
                             </form>
@@ -403,16 +445,13 @@
                     @empty
                     <div class="px-6 py-10 text-center">
                         <p class="text-gray-400 text-sm">Aucune formation ajoutée.</p>
-                        <button onclick="toggleForm('formation-form')"
-                                class="mt-2 text-yellow-500 font-extrabold text-xs hover:text-yellow-600 transition-colors">
-                            + Ajouter ma première formation
-                        </button>
+                        <button onclick="toggleForm('formation-form')" class="mt-2 text-yellow-500 font-extrabold text-xs hover:text-yellow-600 transition-colors">+ Ajouter ma première formation</button>
                     </div>
                     @endforelse
                 </div>
             </div>
 
-            {{-- ── 4. Compétences ── --}}
+            {{-- ══ 4. Compétences ══ --}}
             <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                     <div class="flex items-center gap-3">
@@ -428,7 +467,6 @@
                     </button>
                 </div>
 
-                {{-- Formulaire --}}
                 <div id="competence-form" class="hidden border-b border-gray-100 p-6" style="background:rgba(250,204,21,0.04)">
                     <p class="text-xs font-extrabold text-gray-500 uppercase tracking-widest mb-4">Nouvelle compétence</p>
                     <form action="{{ route('candidat.profil.add-competence') }}" method="POST">
@@ -456,29 +494,21 @@
                             </div>
                         </div>
                         <div class="flex gap-2">
-                            <button type="submit"
-                                    class="px-5 py-2.5 bg-gray-900 text-white font-extrabold text-xs rounded-xl hover:bg-yellow-400 hover:text-gray-900 transition-all">
-                                Ajouter la compétence
-                            </button>
-                            <button type="button" onclick="toggleForm('competence-form')"
-                                    class="px-5 py-2.5 border border-gray-200 text-gray-600 font-extrabold text-xs rounded-xl hover:bg-gray-50 transition-all">
-                                Annuler
-                            </button>
+                            <button type="submit" class="px-5 py-2.5 bg-gray-900 text-white font-extrabold text-xs rounded-xl hover:bg-yellow-400 hover:text-gray-900 transition-all">Ajouter la compétence</button>
+                            <button type="button" onclick="toggleForm('competence-form')" class="px-5 py-2.5 border border-gray-200 text-gray-600 font-extrabold text-xs rounded-xl hover:bg-gray-50 transition-all">Annuler</button>
                         </div>
                     </form>
                 </div>
 
-                {{-- Tags compétences --}}
                 <div class="p-6">
                     @forelse($competences as $competence)
                     @php
-                    $niveauConfig = [
-                        'debutant'      => ['bg' => 'bg-gray-100',   'text' => 'text-gray-600',   'dot' => 'bg-gray-400'],
-                        'intermediaire' => ['bg' => 'bg-blue-50',    'text' => 'text-blue-600',   'dot' => 'bg-blue-400'],
-                        'avance'        => ['bg' => 'bg-indigo-50',  'text' => 'text-indigo-600', 'dot' => 'bg-indigo-400'],
-                        'expert'        => ['bg' => 'bg-yellow-50',  'text' => 'text-yellow-600', 'dot' => 'bg-yellow-400'],
-                    ];
-                    $nc = $niveauConfig[$competence->pivot->niveau] ?? $niveauConfig['intermediaire'];
+                    $nc = [
+                        'debutant'      => ['bg'=>'bg-gray-100',  'text'=>'text-gray-600',  'dot'=>'bg-gray-400'],
+                        'intermediaire' => ['bg'=>'bg-blue-50',   'text'=>'text-blue-600',  'dot'=>'bg-blue-400'],
+                        'avance'        => ['bg'=>'bg-indigo-50', 'text'=>'text-indigo-600','dot'=>'bg-indigo-400'],
+                        'expert'        => ['bg'=>'bg-yellow-50', 'text'=>'text-yellow-600','dot'=>'bg-yellow-400'],
+                    ][$competence->pivot->niveau] ?? ['bg'=>'bg-gray-100','text'=>'text-gray-600','dot'=>'bg-gray-400'];
                     @endphp
                     <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl mr-2 mb-2 {{ $nc['bg'] }} {{ $nc['text'] }} text-xs font-extrabold">
                         <span class="w-1.5 h-1.5 rounded-full {{ $nc['dot'] }} inline-block"></span>
@@ -486,16 +516,13 @@
                         <span class="opacity-70 font-semibold">· {{ ucfirst($competence->pivot->niveau) }}</span>
                         <form action="{{ route('candidat.profil.delete-competence', $competence->id) }}" method="POST" class="inline">
                             @csrf @method('DELETE')
-                            <button type="submit" class="hover:opacity-100 opacity-60 ml-0.5 leading-none font-bold text-sm" title="Supprimer">×</button>
+                            <button type="submit" class="hover:opacity-100 opacity-60 ml-0.5 leading-none font-bold text-sm">×</button>
                         </form>
                     </span>
                     @empty
                     <div class="text-center py-6">
                         <p class="text-gray-400 text-sm">Aucune compétence ajoutée.</p>
-                        <button onclick="toggleForm('competence-form')"
-                                class="mt-2 text-yellow-500 font-extrabold text-xs hover:text-yellow-600 transition-colors">
-                            + Ajouter ma première compétence
-                        </button>
+                        <button onclick="toggleForm('competence-form')" class="mt-2 text-yellow-500 font-extrabold text-xs hover:text-yellow-600 transition-colors">+ Ajouter ma première compétence</button>
                     </div>
                     @endforelse
                 </div>

@@ -8,11 +8,6 @@ use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    // public function __construct()
-    // {
-    //     $this->middleware(['auth', 'candidat']);
-    // }
-
     /**
      * Tableau de bord du candidat
      */
@@ -20,12 +15,15 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
+        // Charger les relations pour les recommandations
+        $user->load('formations', 'competences');
+
         // Statistiques
         $stats = [
-            'total_candidatures' => $user->candidatures()->count(),
+            'total_candidatures'      => $user->candidatures()->count(),
             'candidatures_en_attente' => $user->candidatures()->where('statut', 'en_attente')->count(),
-            'candidatures_retenues' => $user->candidatures()->where('statut', 'retenue')->count(),
-            'profil_complet' => $user->profilComplete() ? 'Oui' : 'Non',
+            'candidatures_retenues'   => $user->candidatures()->where('statut', 'retenue')->count(),
+            'profil_complet'          => $user->profilComplete() ? 'Oui' : 'Non',
         ];
 
         // Dernières candidatures
@@ -43,7 +41,32 @@ class DashboardController extends Controller
             ->take(4)
             ->get();
 
-        return view('candidat.dashboard', compact('stats', 'candidatures', 'favoris'));
+        // ✦ Recommandations — basées sur formations + localisation + type_contrat_souhaite
+        $recommandations = $user->getRecommandations(6);
+
+        return view('candidat.dashboard', compact(
+            'stats', 'candidatures', 'favoris', 'recommandations'
+        ));
+    }
+
+    /**
+     * Page dédiée aux recommandations personnalisées
+     */
+    public function recommandations()
+    {
+        $user = auth()->user();
+        $user->load('formations', 'competences');
+
+        // On récupère plus d'offres pour la page dédiée
+        $recommandations = $user->getRecommandations(24);
+
+        // Infos de contexte pour afficher pourquoi ces offres sont recommandées
+        $domaines   = $user->formations->pluck('domaine')->filter()->unique()->values();
+        $diplomes   = $user->formations->pluck('diplome')->filter()->unique()->values();
+
+        return view('candidat.recommandations', compact(
+            'recommandations', 'domaines', 'diplomes'
+        ));
     }
 
     /**
