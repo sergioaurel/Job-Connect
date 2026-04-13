@@ -10,8 +10,19 @@ class CandidatMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check() || !auth()->user()->isCandidat()) {
+        $user = auth()->user();
+
+        if (!auth()->check() || !$user->isCandidat()) {
             abort(403, 'Accès non autorisé.');
+        }
+
+        // Bloquer les comptes suspendus par l'administrateur
+        if (!$user->is_active) {
+            auth()->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            return redirect()->route('login')
+                ->with('error', 'Votre compte a été suspendu. Veuillez contacter l\'administrateur.');
         }
 
         return $next($request);

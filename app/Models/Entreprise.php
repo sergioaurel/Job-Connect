@@ -80,6 +80,14 @@ class Entreprise extends Model
     }
 
     /**
+     * Vérifier si l'entreprise est suspendue
+     */
+    public function isSuspendue()
+    {
+        return $this->statut === 'suspendue';
+    }
+
+    /**
      * Nombre total de candidatures reçues
      */
     public function totalCandidatures()

@@ -10,8 +10,19 @@ class AdminMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check() || !auth()->user()->isAdmin()) {
+        $user = auth()->user();
+
+        if (!auth()->check() || !$user->isAdmin()) {
             abort(403, 'Accès non autorisé.');
+        }
+
+        // Sécurité supplémentaire : vérifier que le compte admin est actif
+        if (!$user->is_active) {
+            auth()->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            return redirect()->route('login')
+                ->with('error', 'Votre compte a été désactivé.');
         }
 
         return $next($request);

@@ -79,25 +79,39 @@ class EntrepriseController extends Controller
     }
 
     /**
-     * Suspendre une entreprise
+     * Suspendre une entreprise.
+     * Met à jour SIMULTANÉMENT :
+     *  - user.is_active     → bloque l'accès à la session
+     *  - entreprise.statut  → affiche "Suspendue" dans l'interface admin
      */
     public function suspendre($id)
     {
-        $entreprise = Entreprise::findOrFail($id);
+        $entreprise = Entreprise::with('user')->findOrFail($id);
 
+        // Bloquer le compte utilisateur
         $entreprise->user->update(['is_active' => false]);
+
+        // Refléter visuellement la suspension dans le statut du profil
+        $entreprise->update(['statut' => 'suspendue']);
 
         return redirect()->back()->with('success', 'Entreprise suspendue avec succès.');
     }
 
     /**
-     * Réactiver une entreprise
+     * Réactiver une entreprise suspendue.
+     * Met à jour SIMULTANÉMENT :
+     *  - user.is_active     → restaure l'accès
+     *  - entreprise.statut  → repasse à "Validée"
      */
     public function reactiver($id)
     {
-        $entreprise = Entreprise::findOrFail($id);
+        $entreprise = Entreprise::with('user')->findOrFail($id);
 
+        // Réactiver le compte utilisateur
         $entreprise->user->update(['is_active' => true]);
+
+        // Remettre le statut du profil à "validée"
+        $entreprise->update(['statut' => 'validee']);
 
         return redirect()->back()->with('success', 'Entreprise réactivée avec succès.');
     }

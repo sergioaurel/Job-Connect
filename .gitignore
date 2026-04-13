@@ -3,6 +3,12 @@
 .env
 .env.backup
 .env.production
+
+# Fichiers sensibles — ne jamais versionner
+note.txt
+backup.sql
+*.sql
+ca.pem
 .phpactor.json
 .phpunit.result.cache
 /.fleet

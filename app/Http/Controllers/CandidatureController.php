@@ -72,9 +72,9 @@ class CandidatureController extends Controller
                 $request->file('cv')->getRealPath(),
                 [
                     'folder'        => 'job_connect/cvs',
-                    'resource_type' => 'image',
+                    'resource_type' => 'raw',
                     'format'        => 'pdf',
-                    'access_mode'   => 'public',
+                    'access_mode'   => 'authenticated', // CVs privés — non accessibles publiquement
                 ]
             );
             $cvPath = $result['secure_url'];

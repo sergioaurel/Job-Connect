@@ -20,9 +20,9 @@ services:
     container_name: job_connect_db
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: job_connect
-      MYSQL_USER: jobuser
-      MYSQL_PASSWORD: jobpassword
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}   # Utiliser variable d'env — jamais en clair
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "3306:3306"
+      - "127.0.0.1:3306:3306"  # Bind local uniquement — non exposé au réseau externe

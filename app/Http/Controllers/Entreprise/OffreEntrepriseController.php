@@ -171,7 +171,23 @@ class OffreEntrepriseController extends Controller
             'date_limite' => 'nullable|date|after:today',
         ]);
 
-        $offre->update($request->all());
+        $offre->update($request->only([
+            'categorie_id',
+            'titre',
+            'type_offre',
+            'type_contrat',
+            'description',
+            'missions',
+            'profil_recherche',
+            'competences_requises',
+            'niveau_etude',
+            'annees_experience',
+            'ville',
+            'salaire_min',
+            'salaire_max',
+            'nombre_postes',
+            'date_limite',
+        ]) + ['salaire_a_negocier' => $request->boolean('salaire_a_negocier')]);
 
         return redirect()->route('entreprise.offres.index')
             ->with('success', 'Offre mise à jour avec succès !');

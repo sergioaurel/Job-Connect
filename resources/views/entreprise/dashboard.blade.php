@@ -53,17 +53,20 @@
 
         {{-- ── BANNIÈRE STATUT ── --}}
         @if($entreprise->statut === 'en_attente')
-        <div class="mb-6 flex items-start gap-4 bg-yellow-50 border border-yellow-200 rounded-2xl p-5">
-            <div class="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-            </div>
-            <div>
-                <p class="text-yellow-800 font-extrabold text-sm">Profil en cours de validation</p>
-                <p class="text-yellow-700 text-xs mt-0.5">Un administrateur vérifiera votre profil sous peu. Vous pourrez publier des offres dès validation.</p>
+        <div class="mb-6 bg-yellow-50 border border-yellow-200 rounded-2xl p-5">
+            <div class="flex items-start gap-4">
+                <div class="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-yellow-800 font-extrabold text-sm">⏳ Compte en attente de vérification</p>
+                    <p class="text-yellow-700 text-xs mt-1">Votre profil est en cours d'examen par notre équipe. Vous serez notifié dès validation.</p>
+                </div>
             </div>
         </div>
+
         @elseif($entreprise->statut === 'rejetee')
         <div class="mb-6 flex items-start gap-4 bg-red-50 border border-red-200 rounded-2xl p-5">
             <div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -72,8 +75,8 @@
                 </svg>
             </div>
             <div>
-                <p class="text-red-800 font-extrabold text-sm">Profil rejeté</p>
-                <p class="text-red-700 text-xs mt-0.5">Veuillez <a href="{{ route('contact') }}" class="underline font-bold">contacter l'administrateur</a> pour plus d'informations.</p>
+                <p class="text-red-800 font-extrabold text-sm">❌ Profil rejeté</p>
+                <p class="text-red-700 text-xs mt-1">Votre demande a été rejetée par notre équipe. Veuillez mettre à jour votre profil et resoumettre.</p>
             </div>
         </div>
         @endif

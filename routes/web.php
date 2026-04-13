@@ -25,7 +25,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 // Pages institutionnelles
 Route::get('/a-propos', [HomeController::class, 'about'])->name('about');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
-Route::post('/contact', [HomeController::class, 'contactSend'])->name('contact.send'); // ← AJOUTER
+Route::post('/contact', [HomeController::class, 'contactSend'])->middleware('throttle:5,60')->name('contact.send'); // Max 5 envois par heure par IP
 
 // Offres publiques
 Route::get('/offres', [OffreController::class, 'index'])->name('offres.index');
@@ -74,12 +74,12 @@ Route::middleware(['auth', 'candidat'])->prefix('candidat')->name('candidat.')->
     Route::post('/profil/competences', [ProfilController::class, 'addCompetence'])->name('profil.add-competence');
     Route::delete('/profil/competences/{id}', [ProfilController::class, 'deleteCompetence'])->name('profil.delete-competence');
     
-    // Candidatures
+    // Candidatures — throttle: max 10 candidatures par heure par utilisateur
     Route::get('/postuler/{offre}', [CandidatureController::class, 'create'])->name('candidatures.create');
-    Route::post('/postuler/{offre}', [CandidatureController::class, 'store'])->name('candidatures.store');
-    
-    // Favoris (AJAX)
-    Route::post('/favoris/toggle/{offre}', [CandidatureController::class, 'toggleFavori'])->name('favoris.toggle');
+    Route::post('/postuler/{offre}', [CandidatureController::class, 'store'])->middleware('throttle:10,60')->name('candidatures.store');
+
+    // Favoris (AJAX) — throttle: max 60 toggles par minute
+    Route::post('/favoris/toggle/{offre}', [CandidatureController::class, 'toggleFavori'])->middleware('throttle:60,1')->name('favoris.toggle');
 });
 
 /*

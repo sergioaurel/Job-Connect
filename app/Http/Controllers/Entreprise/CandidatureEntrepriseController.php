@@ -95,8 +95,8 @@ class CandidatureEntrepriseController extends Controller
 
     /**
      * Télécharger / visualiser le CV d'un candidat
-     * Si le CV est sur Cloudinary (URL https), on redirige directement.
-     * Si le CV est encore sur le storage local (ancienne candidature), on tente le download.
+     * Protection SSRF : on valide que l'URL appartient bien à Cloudinary
+     * avant tout appel réseau.
      */
     public function downloadCV($id)
     {
@@ -109,18 +109,38 @@ class CandidatureEntrepriseController extends Controller
             return redirect()->back()->with('error', 'Aucun CV disponible pour cette candidature.');
         }
 
-        // Si c'est une URL Cloudinary
+        // Si c'est une URL Cloudinary — validation stricte du domaine (anti-SSRF)
         if (str_starts_with($candidature->cv_path, 'http')) {
-            $content = file_get_contents($candidature->cv_path);
-            
-            if ($content === false) {
-                return redirect()->back()->with('error', 'Impossible de télécharger le CV.');
+            $host = parse_url($candidature->cv_path, PHP_URL_HOST);
+
+            // Autoriser uniquement les domaines officiels de Cloudinary
+            $allowedHosts = ['res.cloudinary.com', 'api.cloudinary.com'];
+            $isCloudinary = $host && (
+                in_array($host, $allowedHosts) ||
+                str_ends_with($host, '.cloudinary.com')
+            );
+
+            if (!$isCloudinary) {
+                abort(403, 'Source du CV non autorisée.');
             }
 
-            return response($content, 200, [
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'attachment; filename="cv.pdf"',
+            // Générer une URL signée via le SDK Cloudinary pour les ressources authentifiées
+            $cloudinary = new \Cloudinary\Cloudinary([
+                'cloud' => [
+                    'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+                    'api_key'    => env('CLOUDINARY_API_KEY'),
+                    'api_secret' => env('CLOUDINARY_API_SECRET'),
+                ],
             ]);
+
+            // Extraire le public_id depuis l'URL stockée
+            $publicId = pathinfo(parse_url($candidature->cv_path, PHP_URL_PATH), PATHINFO_FILENAME);
+            $folder   = 'job_connect/cvs';
+
+            $signedUrl = $cloudinary->image("{$folder}/{$publicId}.pdf")
+                ->toUrl(['sign_url' => true, 'expires_at' => time() + 300]);
+
+            return redirect((string) $signedUrl);
         }
 
         return \Storage::disk('public')->download($candidature->cv_path);

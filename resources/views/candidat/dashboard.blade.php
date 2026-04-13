@@ -132,10 +132,10 @@
                     @else
                         <span class="px-2.5 py-1 bg-orange-50 text-orange-500 text-xs font-extrabold rounded-lg uppercase tracking-wide">Stage Acad.</span>
                     @endif
-                    <span class="inline-flex items-center gap-1 px-2 py-1 bg-yellow-50 text-yellow-600 text-xs font-extrabold rounded-lg">
+                    <!-- <span class="inline-flex items-center gap-1 px-2 py-1 bg-yellow-50 text-yellow-600 text-xs font-extrabold rounded-lg">
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                         Match
-                    </span>
+                    </span> -->
                 </div>
                 <h3 class="text-gray-900 font-extrabold text-sm leading-snug group-hover:text-yellow-500 transition-colors">
                     {{ $offre->titre }}

@@ -188,7 +188,18 @@ class DashboardController extends Controller
             'logo'                 => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        $data = $request->except('logo');
+        // Utiliser only() pour éviter tout mass assignment (ex: statut, user_id)
+        $data = $request->only([
+            'nom_entreprise',
+            'description',
+            'secteur_activite',
+            'site_web',
+            'adresse',
+            'ville',
+            'telephone_entreprise',
+            'effectif',
+            'annee_creation',
+        ]);
 
         if ($request->hasFile('logo')) {
             $cloudinary = new \Cloudinary\Cloudinary([

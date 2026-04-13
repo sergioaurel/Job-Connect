@@ -26,6 +26,14 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
+        // Vérifier si le compte est actif (non suspendu par l'admin)
+        if (!auth()->user()->is_active) {
+            Auth::guard('web')->logout();
+            return back()->withErrors([
+                'email' => 'Votre compte a été suspendu. Veuillez contacter l\'administrateur.',
+            ]);
+        }
+
         $request->session()->regenerate();
 
         // Redirection selon le rôle
