@@ -1,7 +1,7 @@
 FROM php:8.4-apache
 
 RUN apt-get update && apt-get install -y \
-    git unzip libzip-dev libonig-dev libpng-dev libicu-dev curl \
+    git unzip libzip-dev libonig-dev libpng-dev libicu-dev curl ca-certificates \
     && docker-php-ext-install pdo_mysql mbstring zip gd intl opcache
 
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
@@ -23,8 +23,6 @@ RUN npm install --include=dev && npm run build
 
 RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
-
-COPY ca.pem /etc/ssl/certs/aiven-ca.pem
 
 RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|g' \
     /etc/apache2/sites-available/000-default.conf
