@@ -86,6 +86,16 @@
     {{-- ✦ SECTION RECOMMANDATIONS ─────────────────── --}}
     @if($recommandations->count() > 0)
     <div class="mb-8">
+            {{-- Message contextuel si les offres ne sont pas exactement dans sa région --}}
+    @if($messageRecommandations)
+    <div class="mb-4 flex items-start gap-3 px-4 py-3 rounded-xl border border-yellow-400/30"
+         style="background:rgba(250,204,21,0.06)">
+        <svg class="w-4 h-4 text-yellow-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <p class="text-yellow-600 text-xs font-semibold leading-relaxed">{{ $messageRecommandations }}</p>
+    </div>
+    @endif
 
         {{-- Header section --}}
         <div class="flex items-center justify-between mb-5">

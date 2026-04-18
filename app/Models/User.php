@@ -108,89 +108,97 @@ class User extends Authenticatable
     //            + localisation + type_contrat_souhaite
     // ═══════════════════════════════════════
 
-    public function getRecommandations(int $limit = 6)
+    public function getRecommandations(int $limit = 6): array
     {
-        // Charger les formations et compétences si pas déjà fait
         if (!$this->relationLoaded('formations')) {
-            $this->load('formations', 'competences');
+            $this->load('formations');
         }
 
-        // Extraire les domaines et diplômes des formations enregistrées
-        $domaines   = $this->formations->pluck('domaine')->filter()->unique()->toArray();
-        $diplomes   = $this->formations->pluck('diplome')->filter()->unique()->toArray();
-        $competences = $this->competences->pluck('nom')->toArray();
+        $diplomes = $this->formations->pluck('diplome')->filter()->unique()->toArray();
+        $estStage = in_array($this->type_contrat_souhaite, ['stage_academique', 'stage_professionnel']);
+        $ville    = $this->localisation ? trim(explode(',', $this->localisation)[0]) : null;
 
-        // Si aucune donnée de profil → retourner les plus récentes
-        if (empty($domaines) && empty($diplomes) && empty($competences)
-            && !$this->localisation && !$this->type_contrat_souhaite) {
-            return Offre::with(['entreprise', 'categorie'])
-                ->where('statut', 'active')
-                ->latest()
-                ->take($limit)
-                ->get();
+        // Si aucun critère → offres récentes
+        if (empty($diplomes) && !$this->localisation && !$this->type_contrat_souhaite) {
+            return [
+                'offres'   => Offre::with(['entreprise', 'categorie'])->where('statut', 'active')->latest()->take($limit)->get(),
+                'message'  => null,
+            ];
         }
 
-        $query = Offre::with(['entreprise', 'categorie'])
-            ->where('statut', 'active');
-
-        // ── Critère 1 : Mots-clés domaine & diplôme dans titre/description ──
-        if (!empty($domaines) || !empty($diplomes) || !empty($competences)) {
-            $query->where(function ($q) use ($domaines, $diplomes, $competences) {
-
-                // Domaines de formation
-                foreach ($domaines as $domaine) {
-                    // Extraire les mots significatifs du domaine
-                    foreach (explode(' ', $domaine) as $mot) {
-                        if (strlen($mot) > 4) {
-                            $q->orWhere('titre', 'like', "%{$mot}%")
-                              ->orWhere('description', 'like', "%{$mot}%")
-                              ->orWhere('profil_recherche', 'like', "%{$mot}%")
-                              ->orWhere('competences_requises', 'like', "%{$mot}%");
-                        }
-                    }
-                }
-
-                // Diplômes
-                foreach ($diplomes as $diplome) {
-                    $q->orWhere('niveau_etude', 'like', "%{$diplome}%")
-                      ->orWhere('profil_recherche', 'like', "%{$diplome}%");
-                }
-
-                // Compétences
-                foreach ($competences as $comp) {
-                    $q->orWhere('competences_requises', 'like', "%{$comp}%")
-                      ->orWhere('description', 'like', "%{$comp}%");
-                }
-            });
-        }
-
-        // ── Critère 2 : Type de contrat souhaité ──
-        if ($this->type_contrat_souhaite) {
-            if (in_array($this->type_contrat_souhaite, ['CDI', 'CDD', 'temps_partiel', 'freelance'])) {
-                $query->where(function ($q) {
-                    $q->where('type_contrat', $this->type_contrat_souhaite)
-                      ->orWhere('type_offre', 'emploi');
-                });
+        // Closure pour appliquer le filtre type contrat
+        $appliquerTypeContrat = function ($q) use ($estStage) {
+            if (!$this->type_contrat_souhaite) return;
+            if ($this->type_contrat_souhaite === 'stage_academique') {
+                $q->where('type_offre', 'stage_academique');
             } elseif ($this->type_contrat_souhaite === 'stage_professionnel') {
-                $query->where('type_offre', 'stage_professionnel');
-            } elseif ($this->type_contrat_souhaite === 'stage_academique') {
-                $query->where('type_offre', 'stage_academique');
+                $q->where('type_offre', 'stage_professionnel');
+            } else {
+                $q->where('type_offre', 'emploi')
+                ->where(fn($q2) => $q2->where('type_contrat', $this->type_contrat_souhaite)->orWhereNull('type_contrat'));
+            }
+        };
+
+        // Closure pour appliquer le filtre diplôme
+        $appliquerDiplome = function ($q) use ($diplomes, $estStage) {
+            if (!empty($diplomes) && !$estStage) {
+                $q->where(function ($q2) use ($diplomes) {
+                    foreach ($diplomes as $diplome) {
+                        $q2->orWhere('niveau_etude', 'like', "%{$diplome}%")
+                        ->orWhere('profil_recherche', 'like', "%{$diplome}%");
+                    }
+                });
+            }
+        };
+
+        // ── Tentative 1 : tous les critères ──
+        $q1 = Offre::with(['entreprise', 'categorie'])->where('statut', 'active');
+        $appliquerDiplome($q1);
+        $appliquerTypeContrat($q1);
+        if ($ville) {
+            $q1->where(fn($q) => $q->where('ville', 'like', "%{$ville}%")->orWhereNull('ville'));
+        }
+        $offres = $q1->latest()->take($limit)->get();
+        if ($offres->isNotEmpty()) {
+            return ['offres' => $offres, 'message' => null];
+        }
+
+        // ── Tentative 2 : sans la localisation ──
+        $q2 = Offre::with(['entreprise', 'categorie'])->where('statut', 'active');
+        $appliquerDiplome($q2);
+        $appliquerTypeContrat($q2);
+        $offres = $q2->latest()->take($limit)->get();
+        if ($offres->isNotEmpty()) {
+            $typeLabel = $this->type_contrat_souhaite
+                ? self::getTypesContratSouhaite()[$this->type_contrat_souhaite] ?? $this->type_contrat_souhaite
+                : 'ces offres';
+            return [
+                'offres'  => $offres,
+                'message' => "Aucune offre de type « {$typeLabel} » disponible à {$ville} pour le moment. Voici les offres disponibles dans d'autres villes.",
+            ];
+        }
+
+        // ── Tentative 3 : uniquement le type contrat ──
+        if ($this->type_contrat_souhaite) {
+            $q3 = Offre::with(['entreprise', 'categorie'])->where('statut', 'active');
+            $appliquerTypeContrat($q3);
+            $offres = $q3->latest()->take($limit)->get();
+            if ($offres->isNotEmpty()) {
+                $typeLabel = self::getTypesContratSouhaite()[$this->type_contrat_souhaite] ?? $this->type_contrat_souhaite;
+                return [
+                    'offres'  => $offres,
+                    'message' => "Aucune offre correspondant exactement à votre profil n'a été trouvée. Voici les offres de type « {$typeLabel} » disponibles.",
+                ];
             }
         }
 
-        // ── Critère 3 : Localisation ──
-        if ($this->localisation) {
-            $ville = trim(explode(',', $this->localisation)[0]);
-            $query->where(function ($q) use ($ville) {
-                $q->where('ville', 'like', "%{$ville}%")
-                  ->orWhereNull('ville');
-            });
-        }
-
-        return $query->latest()->take($limit)->get();
+        // ── Fallback : offres récentes ──
+        return [
+            'offres'  => Offre::with(['entreprise', 'categorie'])->where('statut', 'active')->latest()->take($limit)->get(),
+            'message' => "Aucune offre ne correspond exactement à votre profil. Voici les offres les plus récentes.",
+        ];
     }
-
-    // ═══════════════════════════════════════
+        // ═══════════════════════════════════════
     // LISTES DE RÉFÉRENCE
     // ═══════════════════════════════════════
 
