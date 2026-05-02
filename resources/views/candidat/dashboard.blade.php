@@ -14,11 +14,6 @@
                 </h1>
                 <p class="text-gray-500 text-sm mt-1">Bienvenue sur votre tableau de bord</p>
             </div>
-            <!-- <a href="{{ route('offres.index') }}"
-               class="inline-flex items-center gap-2 px-5 py-2.5 bg-yellow-400 text-gray-900 font-extrabold text-xs rounded-xl hover:bg-yellow-300 transition-all self-start sm:self-auto">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                Toutes les offres
-            </a> -->
         </div>
         <nav class="flex gap-1 overflow-x-auto pb-0 scrollbar-hide">
             @php
@@ -45,7 +40,6 @@
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-    {{-- Alerte profil incomplet --}}
     @if(!auth()->user()->profilComplete())
     <div class="mb-8 rounded-2xl p-5 flex items-center gap-4 border border-yellow-400/30" style="background:rgba(250,204,21,0.07)">
         <div class="w-10 h-10 rounded-xl bg-yellow-400 flex items-center justify-center flex-shrink-0">
@@ -61,7 +55,6 @@
     </div>
     @endif
 
-    {{-- Stats --}}
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
         @foreach([
             ['val' => $stats['total_candidatures'],      'label' => 'Candidatures',  'icon' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', 'color' => 'bg-indigo-50 text-indigo-600'],
@@ -83,10 +76,8 @@
         @endforeach
     </div>
 
-    {{-- ✦ SECTION RECOMMANDATIONS ─────────────────── --}}
     @if($recommandations->count() > 0)
     <div class="mb-8">
-            {{-- Message contextuel si les offres ne sont pas exactement dans sa région --}}
     @if($messageRecommandations)
     <div class="mb-4 flex items-start gap-3 px-4 py-3 rounded-xl border border-yellow-400/30"
          style="background:rgba(250,204,21,0.06)">
@@ -97,7 +88,6 @@
     </div>
     @endif
 
-        {{-- Header section --}}
         <div class="flex items-center justify-between mb-5">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-xl bg-yellow-400 flex items-center justify-center">
@@ -112,16 +102,9 @@
                         @if(auth()->user()->formations->count() > 0)
                             · {{ auth()->user()->formations->first()->domaine ?? auth()->user()->formations->first()->diplome }}
                         @endif
-                        <!-- @if(auth()->user()->localisation)
-                            · {{ explode(',', auth()->user()->localisation)[0] }}
-                        @endif
-                        @if(auth()->user()->type_contrat_souhaite)
-                            · {{ auth()->user()->type_contrat_souhaite }}
-                        @endif -->
                     </p>
                 </div>
             </div>
-            {{-- Bouton "Voir tout" → page dédiée --}}
             <a href="{{ route('candidat.recommandations') }}"
                class="inline-flex items-center gap-1.5 px-4 py-2 bg-gray-900 text-white font-extrabold text-xs rounded-xl hover:bg-yellow-400 hover:text-gray-900 transition-all">
                 Voir tout
@@ -129,7 +112,6 @@
             </a>
         </div>
 
-        {{-- Cards recommandées --}}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             @foreach($recommandations as $offre)
             <a href="{{ route('offres.show', $offre->slug) }}"
@@ -142,10 +124,6 @@
                     @else
                         <span class="px-2.5 py-1 bg-orange-50 text-orange-500 text-xs font-extrabold rounded-lg uppercase tracking-wide">Stage Acad.</span>
                     @endif
-                    <!-- <span class="inline-flex items-center gap-1 px-2 py-1 bg-yellow-50 text-yellow-600 text-xs font-extrabold rounded-lg">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                        Match
-                    </span> -->
                 </div>
                 <h3 class="text-gray-900 font-extrabold text-sm leading-snug group-hover:text-yellow-500 transition-colors">
                     {{ $offre->titre }}
@@ -170,7 +148,6 @@
 
     </div>
     @else
-    {{-- Pas encore de recommandations --}}
     <div class="mb-8 rounded-2xl p-6 border border-dashed border-gray-200 text-center bg-white">
         <div class="w-12 h-12 bg-yellow-50 rounded-2xl flex items-center justify-center mx-auto mb-3">
             <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -188,10 +165,8 @@
     </div>
     @endif
 
-    {{-- Grille candidatures + favoris --}}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-        {{-- Dernières candidatures --}}
         <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                 <h2 class="text-gray-900 font-extrabold text-base">Dernières candidatures</h2>
@@ -229,7 +204,6 @@
             </div>
         </div>
 
-        {{-- Offres favorites --}}
         <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                 <h2 class="text-gray-900 font-extrabold text-base">Offres favorites</h2>

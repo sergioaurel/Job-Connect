@@ -17,7 +17,7 @@ class User extends Authenticatable
         'role',
         'telephone',
         'localisation',
-        'type_contrat_souhaite', // ← seul champ ajouté
+        'type_contrat_souhaite',
         'is_active',
     ];
 
@@ -104,8 +104,6 @@ class User extends Authenticatable
 
     // ═══════════════════════════════════════
     // SYSTÈME DE RECOMMANDATION
-    // Basé sur : formations enregistrées (diplôme + domaine)
-    //            + localisation + type_contrat_souhaite
     // ═══════════════════════════════════════
 
     public function getRecommandations(int $limit = 6): array
@@ -121,31 +119,28 @@ class User extends Authenticatable
         // Si aucun critère → offres récentes
         if (empty($diplomes) && !$this->localisation && !$this->type_contrat_souhaite) {
             return [
-                'offres'   => Offre::with(['entreprise', 'categorie'])->where('statut', 'active')->latest()->take($limit)->get(),
-                'message'  => null,
+                'offres'  => Offre::with(['entreprise', 'categorie'])->where('statut', 'active')->latest()->take($limit)->get(),
+                'message' => null,
             ];
         }
 
-        // Closure pour appliquer le filtre type contrat
-        $appliquerTypeContrat = function ($q) use ($estStage) {
+        // Filtre type contrat — uniquement stages désormais
+        $appliquerTypeContrat = function ($q) {
             if (!$this->type_contrat_souhaite) return;
             if ($this->type_contrat_souhaite === 'stage_academique') {
                 $q->where('type_offre', 'stage_academique');
             } elseif ($this->type_contrat_souhaite === 'stage_professionnel') {
                 $q->where('type_offre', 'stage_professionnel');
-            } else {
-                $q->where('type_offre', 'emploi')
-                ->where(fn($q2) => $q2->where('type_contrat', $this->type_contrat_souhaite)->orWhereNull('type_contrat'));
             }
         };
 
-        // Closure pour appliquer le filtre diplôme
+        // Filtre diplôme — désactivé pour les stages
         $appliquerDiplome = function ($q) use ($diplomes, $estStage) {
             if (!empty($diplomes) && !$estStage) {
                 $q->where(function ($q2) use ($diplomes) {
                     foreach ($diplomes as $diplome) {
                         $q2->orWhere('niveau_etude', 'like', "%{$diplome}%")
-                        ->orWhere('profil_recherche', 'like', "%{$diplome}%");
+                           ->orWhere('profil_recherche', 'like', "%{$diplome}%");
                     }
                 });
             }
@@ -192,13 +187,14 @@ class User extends Authenticatable
             }
         }
 
-        // ── Fallback : offres récentes ──
+        // ── Fallback final ──
         return [
             'offres'  => Offre::with(['entreprise', 'categorie'])->where('statut', 'active')->latest()->take($limit)->get(),
             'message' => "Aucune offre ne correspond exactement à votre profil. Voici les offres les plus récentes.",
         ];
     }
-        // ═══════════════════════════════════════
+
+    // ═══════════════════════════════════════
     // LISTES DE RÉFÉRENCE
     // ═══════════════════════════════════════
 
@@ -248,13 +244,10 @@ class User extends Authenticatable
         ];
     }
 
+    // ── Uniquement les deux types de stage ──
     public static function getTypesContratSouhaite(): array
     {
         return [
-            'CDI'                 => 'CDI — Contrat à durée indéterminée',
-            'CDD'                 => 'CDD — Contrat à durée déterminée',
-            'temps_partiel'       => 'Temps partiel',
-            'freelance'           => 'Freelance / Mission',
             'stage_professionnel' => 'Stage professionnel',
             'stage_academique'    => 'Stage académique',
         ];

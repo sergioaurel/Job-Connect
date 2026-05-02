@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Offres d\'emploi et stages au Bénin — JobConnect')
+@section('title', 'Offres de stages au Bénin — JobConnect')
 
 @section('content')
 
@@ -16,17 +16,11 @@
     <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
             <div>
-                <!-- <div class="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full"
-                     style="background:rgba(250,204,21,0.1);border:1px solid rgba(250,204,21,0.25)">
-                    <span class="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse inline-block"></span>
-                    <span class="text-yellow-400 text-xs font-extrabold tracking-widest uppercase">
-                        {{ $offres->total() }} offre(s) disponible(s)
-                    </span>
-                </div> -->
                 <h1 class="text-white font-extrabold leading-tight"
                     style="font-size:clamp(1.8rem,4vw,3rem);letter-spacing:-0.02em">
-                    Offres d'emploi<br>& stages au <span class="text-yellow-400">Bénin</span>
+                    Offres de stages<br>au <span class="text-yellow-400">Bénin</span>
                 </h1>
+                <p class="text-gray-500 text-sm mt-2">Stage professionnel · Stage académique</p>
             </div>
 
             {{-- Barre recherche rapide --}}
@@ -63,7 +57,7 @@
 
                     <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                         <h2 class="text-sm font-extrabold text-gray-900 uppercase tracking-widest">Filtres</h2>
-                        @if(request()->hasAny(['search','categorie','type_offre','ville','type_contrat']))
+                        @if(request()->hasAny(['search','categorie','type_offre','ville']))
                         <a href="{{ route('offres.index') }}"
                            class="text-xs text-yellow-500 font-semibold hover:text-yellow-400 transition-colors">
                             Tout effacer
@@ -87,13 +81,12 @@
                             </select>
                         </div>
 
-                        {{-- Type d'offre --}}
+                        {{-- Type de stage — uniquement pro et académique ── --}}
                         <div>
-                            <label class="block text-xs font-extrabold text-gray-500 uppercase tracking-widest mb-3">Type d'offre</label>
+                            <label class="block text-xs font-extrabold text-gray-500 uppercase tracking-widest mb-3">Type de stage</label>
                             <div class="space-y-2">
                                 @foreach([
-                                    ['value' => '',                    'label' => 'Tous les types'],
-                                    ['value' => 'emploi',              'label' => 'Emploi'],
+                                    ['value' => '',                    'label' => 'Tous les stages'],
                                     ['value' => 'stage_professionnel', 'label' => 'Stage professionnel'],
                                     ['value' => 'stage_academique',    'label' => 'Stage académique'],
                                 ] as $type)
@@ -121,26 +114,6 @@
                             </select>
                         </div>
 
-                        {{-- Type de contrat --}}
-                        <div>
-                            <label class="block text-xs font-extrabold text-gray-500 uppercase tracking-widest mb-3">Contrat</label>
-                            <div class="flex flex-wrap gap-2">
-                                @foreach(['CDI','CDD','Stage','Freelance','Temps partiel'] as $contrat)
-                                <label class="cursor-pointer">
-                                    <input type="radio" name="type_contrat" value="{{ $contrat }}"
-                                           {{ request('type_contrat') == $contrat ? 'checked' : '' }}
-                                           class="sr-only peer">
-                                    <span class="inline-block px-3 py-1.5 text-xs font-bold rounded-lg border transition-all
-                                                 border-gray-200 text-gray-600 bg-white
-                                                 peer-checked:bg-yellow-400 peer-checked:text-gray-900 peer-checked:border-yellow-400
-                                                 hover:border-yellow-300 hover:text-yellow-500 cursor-pointer">
-                                        {{ $contrat }}
-                                    </span>
-                                </label>
-                                @endforeach
-                            </div>
-                        </div>
-
                         {{-- Bouton filtrer --}}
                         <button type="submit"
                                 class="w-full py-3 bg-gray-900 text-white font-extrabold text-sm rounded-xl hover:bg-yellow-400 hover:text-gray-900 transition-all duration-200">
@@ -163,18 +136,17 @@
                         </span>
                         @endif
                         @if(request('type_offre'))
-                        <span class="px-2.5 py-1 bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-bold rounded-full">
-                            {{ request('type_offre') }}
+                        <span class="px-2.5 py-1 bg-green-50 border border-green-200 text-green-700 text-xs font-bold rounded-full">
+                            {{ request('type_offre') === 'stage_professionnel' ? 'Stage pro' : 'Stage acad.' }}
                         </span>
                         @endif
                     </div>
 
                     <form action="{{ route('offres.index') }}" method="GET" class="inline-flex items-center gap-2">
-                        <input type="hidden" name="search"       value="{{ request('search') }}">
-                        <input type="hidden" name="categorie"    value="{{ request('categorie') }}">
-                        <input type="hidden" name="type_offre"   value="{{ request('type_offre') }}">
-                        <input type="hidden" name="ville"        value="{{ request('ville') }}">
-                        <input type="hidden" name="type_contrat" value="{{ request('type_contrat') }}">
+                        <input type="hidden" name="search"     value="{{ request('search') }}">
+                        <input type="hidden" name="categorie"  value="{{ request('categorie') }}">
+                        <input type="hidden" name="type_offre" value="{{ request('type_offre') }}">
+                        <input type="hidden" name="ville"      value="{{ request('ville') }}">
                         <label class="text-xs text-gray-500 font-semibold whitespace-nowrap">Trier par</label>
                         <select name="sort" onchange="this.form.submit()"
                                 class="px-3 py-2 text-sm rounded-xl border border-gray-200 bg-white text-gray-900 focus:outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 transition-all">
@@ -194,22 +166,19 @@
                         <div class="flex items-start justify-between gap-4">
                             <div class="flex-1 min-w-0">
 
-                                {{-- Badges type + contrat --}}
+                                {{-- Badge type --}}
                                 <div class="flex flex-wrap items-center gap-2 mb-3">
-                                    @if($offre->type_offre === 'emploi')
-                                        <span class="px-2.5 py-1 bg-indigo-50 text-indigo-600 text-xs font-extrabold rounded-lg uppercase tracking-wide">Emploi</span>
-                                    @elseif($offre->type_offre === 'stage_professionnel')
+                                    @if($offre->type_offre === 'stage_professionnel')
                                         <span class="px-2.5 py-1 bg-green-50 text-green-600 text-xs font-extrabold rounded-lg uppercase tracking-wide">Stage Pro</span>
                                     @else
                                         <span class="px-2.5 py-1 bg-orange-50 text-orange-500 text-xs font-extrabold rounded-lg uppercase tracking-wide">Stage Acad.</span>
                                     @endif
 
-                                    @if($offre->type_contrat)
-                                    <span class="px-2.5 py-1 bg-gray-100 text-gray-600 text-xs font-bold rounded-lg">{{ $offre->type_contrat }}</span>
-                                    @endif
-
                                     @if($offre->date_limite && $offre->date_limite->diffInDays(now()) <= 7 && $offre->date_limite->isFuture())
-                                    <span class="px-2.5 py-1 bg-red-50 text-red-500 text-xs font-bold rounded-lg">⏰ Expire bientôt</span>
+                                    <span class="px-2.5 py-1 bg-red-50 text-red-500 text-xs font-bold rounded-lg flex items-center gap-1">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                        Expire bientôt
+                                    </span>
                                     @endif
                                 </div>
 
@@ -248,8 +217,7 @@
 
                                     <span class="flex items-center gap-1.5 text-xs text-gray-400">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                         </svg>
                                         {{ $offre->vues }} vue(s)
                                     </span>
@@ -271,26 +239,6 @@
                                     @endif
                                 </div>
                             </div>
-
-                            {{-- Logo ou initiale entreprise + bouton --}}
-                            <!-- <div class="flex flex-col items-end gap-3 flex-shrink-0">
-                                @if($offre->entreprise->logo)
-                                <img src="{{ str_starts_with($offre->entreprise->logo, 'http') ? $offre->entreprise->logo : asset('storage/' . $offre->entreprise->logo) }}"
-                                     alt="{{ $offre->entreprise->nom_entreprise }}"
-                                     class="w-14 h-14 object-contain border border-gray-200 rounded-xl bg-white p-1">
-                                @else
-                                <div class="w-14 h-14 rounded-xl bg-gray-900 flex items-center justify-center text-white font-extrabold text-lg flex-shrink-0">
-                                    {{ strtoupper(substr($offre->entreprise->nom_entreprise, 0, 1)) }}
-                                </div>
-                                @endif
-
-                                <span class="text-xs font-extrabold text-yellow-500 group-hover:translate-x-1 transition-transform duration-200 inline-flex items-center gap-1 whitespace-nowrap">
-                                    Postuler
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                                    </svg>
-                                </span>
-                            </div> -->
                         </div>
                     </a>
                     @empty
@@ -301,7 +249,7 @@
                             </svg>
                         </div>
                         <p class="text-gray-900 font-bold text-lg mb-2">Aucune offre trouvée</p>
-                        <p class="text-gray-400 text-sm mb-6">Aucune offre ne correspond à vos critères de recherche.</p>
+                        <p class="text-gray-400 text-sm mb-6">Aucune offre de stage ne correspond à vos critères.</p>
                         <a href="{{ route('offres.index') }}"
                            class="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white font-bold rounded-xl text-sm hover:bg-yellow-400 hover:text-gray-900 transition-all">
                             Réinitialiser les filtres

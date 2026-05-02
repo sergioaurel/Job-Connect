@@ -100,11 +100,11 @@
                     </div>
                     @if($user->type_contrat_souhaite)
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center flex-shrink-0">
-                            <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <div class="w-8 h-8 rounded-lg bg-yellow-50 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
                         </div>
                         <div>
-                            <p class="text-gray-400 text-xs">Contrat souhaité</p>
+                            <p class="text-gray-400 text-xs">Type de stage souhaité</p>
                             <p class="text-gray-900 text-sm font-semibold">{{ $typesContrat[$user->type_contrat_souhaite] ?? $user->type_contrat_souhaite }}</p>
                         </div>
                     </div>
@@ -173,25 +173,21 @@
                         @csrf
                         @method('PUT')
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
-
                             <div>
                                 <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">Nom complet *</label>
                                 <input type="text" name="name" value="{{ old('name', $user->name) }}" required
                                     class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all">
                                 @error('name')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                             </div>
-
                             <div>
-                                <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">Téléphone *</label>
+                                <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widests mb-2">Téléphone *</label>
                                 <input type="text" name="telephone" value="{{ old('telephone', $user->telephone) }}" required
                                     placeholder="+229 97 000 000"
                                     class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all">
                                 @error('telephone')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                             </div>
-
-                            {{-- Localisation — SELECT ville --}}
                             <div class="sm:col-span-2">
-                                <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">Localisation *</label>
+                                <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widests mb-2">Localisation *</label>
                                 <select name="localisation" required
                                     class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all appearance-none">
                                     <option value="">Sélectionner votre ville...</option>
@@ -203,7 +199,6 @@
                                 </select>
                                 @error('localisation')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                             </div>
-
                         </div>
                         <button type="submit"
                                 class="px-6 py-2.5 bg-gray-900 text-white font-extrabold text-xs rounded-xl hover:bg-yellow-400 hover:text-gray-900 transition-all">
@@ -230,28 +225,28 @@
                 </div>
 
                 <div id="experience-form" class="hidden border-b border-gray-100 p-6" style="background:rgba(250,204,21,0.04)">
-                    <p class="text-xs font-extrabold text-gray-500 uppercase tracking-widest mb-4">Nouvelle expérience</p>
+                    <p class="text-xs font-extrabold text-gray-500 uppercase tracking-widests mb-4">Nouvelle expérience</p>
                     <form action="{{ route('candidat.profil.add-experience') }}" method="POST">
                         @csrf
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                             <div>
-                                <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">Poste *</label>
+                                <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widests mb-2">Poste *</label>
                                 <input type="text" name="poste" required class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all">
                             </div>
                             <div>
-                                <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">Entreprise *</label>
+                                <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widests mb-2">Entreprise *</label>
                                 <input type="text" name="entreprise" required class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all">
                             </div>
                             <div>
-                                <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">Ville</label>
+                                <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widests mb-2">Ville</label>
                                 <input type="text" name="ville" class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all">
                             </div>
                             <div>
-                                <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">Date de début *</label>
+                                <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widests mb-2">Date de début *</label>
                                 <input type="date" name="date_debut" required class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all">
                             </div>
                             <div>
-                                <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">Date de fin</label>
+                                <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widests mb-2">Date de fin</label>
                                 <input type="date" name="date_fin" id="date_fin" class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all">
                             </div>
                             <div class="flex items-center">
@@ -265,7 +260,7 @@
                                 </label>
                             </div>
                             <div class="sm:col-span-2">
-                                <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">Description</label>
+                                <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widests mb-2">Description</label>
                                 <textarea name="description" rows="3" class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all resize-none"></textarea>
                             </div>
                         </div>
@@ -308,7 +303,7 @@
                 </div>
             </div>
 
-            {{-- ══ 3. Formations + Type de contrat souhaité ══ --}}
+            {{-- ══ 3. Formations + Type de stage souhaité ══ --}}
             <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                     <div class="flex items-center gap-3">
@@ -324,25 +319,25 @@
                     </button>
                 </div>
 
-                {{-- ✦ Type de contrat souhaité — placé ici dans la section Formations --}}
+                {{-- ✦ Type de stage souhaité ──────────────────────────────────── --}}
                 <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
                     <form action="{{ route('candidat.profil.update-infos') }}" method="POST" class="flex flex-col sm:flex-row sm:items-center gap-3">
                         @csrf
                         @method('PUT')
-                        {{-- Champs cachés pour ne pas écraser les autres valeurs --}}
                         <input type="hidden" name="name"         value="{{ $user->name }}">
                         <input type="hidden" name="telephone"    value="{{ $user->telephone }}">
                         <input type="hidden" name="localisation" value="{{ $user->localisation }}">
 
                         <div class="flex items-center gap-2 flex-shrink-0">
-                            <div class="w-7 h-7 rounded-lg bg-indigo-100 flex items-center justify-center">
-                                <svg class="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            <div class="w-7 h-7 rounded-lg bg-yellow-100 flex items-center justify-center">
+                                <svg class="w-3.5 h-3.5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
                             </div>
                             <label class="text-xs font-extrabold text-gray-700 uppercase tracking-widest whitespace-nowrap">
-                                Type de contrat souhaité
+                                Type de stage souhaité
                             </label>
                         </div>
 
+                        {{-- ✦ Uniquement stage pro et stage académique ── --}}
                         <select name="type_contrat_souhaite"
                             onchange="this.form.submit()"
                             class="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all appearance-none">
@@ -353,8 +348,6 @@
                             </option>
                             @endforeach
                         </select>
-
-                        <p class="text-gray-400 text-xs sm:hidden">Influence vos recommandations d'offres</p>
                     </form>
                     <p class="text-gray-400 text-xs mt-2 hidden sm:block">
                         Ce choix influence directement les offres recommandées sur votre tableau de bord.
@@ -367,8 +360,6 @@
                     <form action="{{ route('candidat.profil.add-formation') }}" method="POST">
                         @csrf
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-
-                            {{-- Diplôme SELECT --}}
                             <div>
                                 <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">Diplôme *</label>
                                 <select name="diplome" required
@@ -379,14 +370,11 @@
                                     @endforeach
                                 </select>
                             </div>
-
                             <div>
                                 <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">Établissement *</label>
                                 <input type="text" name="etablissement" required placeholder="UAC, EPAC, EIG..."
                                     class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all">
                             </div>
-
-                            {{-- Domaine SELECT --}}
                             <div>
                                 <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">Domaine</label>
                                 <select name="domaine"
@@ -397,14 +385,12 @@
                                     @endforeach
                                 </select>
                             </div>
-
                             <div>
                                 <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">Année d'obtention *</label>
                                 <input type="number" name="annee_obtention" min="1950" max="{{ date('Y') + 5 }}" required
                                     placeholder="{{ date('Y') }}"
                                     class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition-all">
                             </div>
-
                             <div class="sm:col-span-2">
                                 <label class="block text-xs font-extrabold text-gray-700 uppercase tracking-widest mb-2">Description</label>
                                 <textarea name="description" rows="2"
