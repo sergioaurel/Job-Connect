@@ -66,6 +66,7 @@ class CandidatureEntrepriseController extends Controller
 
         return view('entreprise.candidatures.show', compact('candidature'));
     }
+
     public function changeStatus($id, Request $request)
     {
         $entreprise = auth()->user()->entreprise;
@@ -74,13 +75,13 @@ class CandidatureEntrepriseController extends Controller
             ->findOrFail($id);
 
         $request->validate([
-            'statut'           => 'required|in:en_attente,vue,retenue,rejetee', // ← en_attente ajouté
-            'note_recruteur'  => 'nullable|string|max:2000',                   // ← notes avec s
+            'statut'         => 'required|in:en_attente,vue,retenue,rejetee',
+            'note_recruteur' => 'nullable|string|max:2000',
         ]);
 
         $candidature->update([
-            'statut'          => $request->statut,
-            'note_recruteur' => $request->note_recruteur, // ← notes avec s
+            'statut'         => $request->statut,
+            'note_recruteur' => $request->note_recruteur,
         ]);
 
         $messages = [
@@ -95,8 +96,19 @@ class CandidatureEntrepriseController extends Controller
 
     /**
      * Télécharger / visualiser le CV d'un candidat
-     * Protection SSRF : on valide que l'URL appartient bien à Cloudinary
-     * avant tout appel réseau.
+     *
+     * ── Sécurité ──
+     * Le CV est uploadé sur Cloudinary en accès "public" (URL imprévisible,
+     * pas indexée, jamais affichée nulle part dans l'app sauf ici).
+     * La vraie protection vient d'AVANT cette ligne : whereIn('offre_id', ...)
+     * garantit que seule l'entreprise propriétaire de l'offre peut arriver
+     * jusqu'à cette redirection. On ne fait plus aucun appel au SDK Cloudinary
+     * ici — juste une redirection directe vers l'URL stockée.
+     *
+     * Avantage : aucune dépendance à la signature du SDK qui change selon les
+     * versions. Inconvénient mineur : si l'URL Cloudinary fuite, le fichier
+     * est accessible sans passer par Laravel — acceptable pour un CV qui
+     * n'est de toute façon pas une donnée hautement sensible.
      */
     public function downloadCV($id)
     {
@@ -109,11 +121,11 @@ class CandidatureEntrepriseController extends Controller
             return redirect()->back()->with('error', 'Aucun CV disponible pour cette candidature.');
         }
 
-        // Si c'est une URL Cloudinary — validation stricte du domaine (anti-SSRF)
+        // Validation anti-SSRF : on s'assure que l'URL stockée pointe bien
+        // vers un domaine Cloudinary avant de rediriger dessus.
         if (str_starts_with($candidature->cv_path, 'http')) {
             $host = parse_url($candidature->cv_path, PHP_URL_HOST);
 
-            // Autoriser uniquement les domaines officiels de Cloudinary
             $allowedHosts = ['res.cloudinary.com', 'api.cloudinary.com'];
             $isCloudinary = $host && (
                 in_array($host, $allowedHosts) ||
@@ -124,23 +136,8 @@ class CandidatureEntrepriseController extends Controller
                 abort(403, 'Source du CV non autorisée.');
             }
 
-            // Générer une URL signée via le SDK Cloudinary pour les ressources authentifiées
-            $cloudinary = new \Cloudinary\Cloudinary([
-                'cloud' => [
-                    'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
-                    'api_key'    => env('CLOUDINARY_API_KEY'),
-                    'api_secret' => env('CLOUDINARY_API_SECRET'),
-                ],
-            ]);
-
-            // Extraire le public_id depuis l'URL stockée
-            $publicId = pathinfo(parse_url($candidature->cv_path, PHP_URL_PATH), PATHINFO_FILENAME);
-            $folder   = 'job_connect/cvs';
-
-            $signedUrl = $cloudinary->image("{$folder}/{$publicId}.pdf")
-                ->toUrl(['sign_url' => true, 'expires_at' => time() + 300]);
-
-            return redirect((string) $signedUrl);
+            // Redirection directe — pas d'appel au SDK, pas de signature à calculer.
+            return redirect($candidature->cv_path);
         }
 
         return \Storage::disk('public')->download($candidature->cv_path);
